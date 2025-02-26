@@ -1,0 +1,99 @@
+﻿@page "/blog"
+@inject HttpClient Http
+<h2>All Blogs</h2>
+
+<!-- Target Section -->
+<div id="blog-section">
+    <h3>More Blog Posts</h3>
+
+    @foreach (var blog in blogs)
+    {
+        <div class="card">
+            <img src="@blog.ImageUrl" alt="@blog.Title">
+            <h3>@blog.Title</h3>
+            <p class="description">@blog.Description</p>
+        </div>
+    }
+</div>
+
+@code {
+    private List<Slide> blogs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchAllBlogs();
+    }
+
+    private async Task FetchAllBlogs()
+    {
+        string baseUrl = "https://localhost:7061/api/slider";
+        blogs = await Http.GetFromJsonAsync<List<Slide>>(baseUrl) ?? new();
+    }
+
+    public class Slide
+    {
+        public string Id { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Date { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+    }
+}
+
+<style>
+    /* General styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+/* Blog section container */
+#blog-section {
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+/* Blog cards */
+.card {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.02);
+}
+
+/* Blog images */
+.card img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* Blog titles */
+.card h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-top: 10px;
+}
+
+/* Blog descriptions */
+.card .description {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.5;
+}
+
+
+</style>

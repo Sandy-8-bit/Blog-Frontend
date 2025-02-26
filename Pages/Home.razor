@@ -1,0 +1,182 @@
+﻿@page "/"
+@layout MainLayout
+
+@inject HttpClient HttpClient
+
+<PageTitle>Home</PageTitle>
+
+@if (currentSlide != null)
+{
+    <div class="Whole-home flex flex-column gap-5">
+        <div class="slider" style="background-image: url('@currentSlide.ImageUrl');">
+            <div class="whole-content">
+                <div class="middle-content">
+                    <h2>@currentSlide.Title</h2>
+                </div>
+                <div class="third-content">
+                    <div class="date">
+                        <p>@currentSlide.Date</p>
+                    </div>
+                    <div class="subcontent">
+                        <p class="description">@TruncateText(currentSlide.Description, 100)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="Count d-flex justify-content-center w-[1440px] pt-5">
+            <ErrorBoundary>
+               <Popular/>
+            </ErrorBoundary>
+        </div>
+    </div>
+
+}
+else
+{
+    <p>No slides available.</p>
+}
+
+@code {
+    private List<Slide> slides = new();
+    private Slide? currentSlide;
+    private int slideIndex = 0;
+    private System.Timers.Timer? timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSlides();
+    }
+    private string TruncateText(string text, int wordLimit)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return string.Empty;
+
+        var words = text.Split(' ');
+        if (words.Length <= wordLimit) return text;
+
+        return string.Join(" ", words.Take(wordLimit)) + "...";
+    }
+
+    private async Task LoadSlides()
+    {
+        var allSlides = await FetchSlidesFromBackend();
+
+        // ✅ Only take the first three slides
+        slides = allSlides.Take(3).ToList();
+
+        if (slides.Count > 0)
+        {
+            currentSlide = slides[0];
+
+            // Start automatic slider (looping through only 3 slides)
+            timer = new System.Timers.Timer(5000);
+            timer.Elapsed += ChangeSlide;
+            timer.AutoReset = true;
+            timer.Start();
+        }
+    }
+
+    private async Task<List<Slide>> FetchSlidesFromBackend()
+    {
+        try
+        {
+            return await HttpClient.GetFromJsonAsync<List<Slide>>("https://localhost:7061/api/slider") ?? new List<Slide>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching slides: {ex.Message}");
+            return new List<Slide>();
+        }
+    }
+
+    private void ChangeSlide(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        if (slides.Count == 0) return;
+        slideIndex = (slideIndex + 1) % slides.Count;
+        currentSlide = slides[slideIndex];
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+
+    private class Slide
+    {
+        public string Id { get; set; } = "";
+        public string ImageUrl { get; set; } = "";
+        public string Category { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string Date { get; set; } = "";
+        public string Description { get; set; } = "";
+    }
+}
+
+
+<style>
+
+    .whole-home {
+        margin-top: 80px; /* Push content below the navbar */
+        
+    }
+    .high {
+        padding-left: 250px;
+        padding-top: 100px;
+    }
+
+    .slider {
+        width: 1540px;
+        height: 600px;
+        background-color: black;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .slider {
+        position: relative;
+    }
+
+    .middle-content {
+        color: #ffffff;
+        font-family: Lora;
+        font-size: 36px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        width: 530px;
+    }
+
+    .date {
+        color: #ffffff;
+        font-family: Lora;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+    }
+
+    .subcontent {
+        color: #ffffff;
+        font-family: Lora;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px;
+        width: 420px;
+    }
+
+    .third-content {
+        display: flex;
+        gap: 20PX;
+        align-items:center;
+    }
+
+    .whole-content {
+        display: flex;
+        position: relative;
+        top: 250px;
+        flex-direction: column;
+        padding-left: 100PX;
+    }
+</style>

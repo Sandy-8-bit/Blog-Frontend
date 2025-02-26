@@ -1,0 +1,357 @@
+﻿@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<div class="content-sec flex w-[1460px] justify-content-center">
+    <div class="top-sec text-white">
+        <h2>Popular topics</h2>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="categorys d-flex gap-5 text-white">
+        <div class="itm" @onclick='() => FetchBlogsByCategory(null)'><a>All</a></div>
+        <div class="itm" @onclick='() => FetchBlogsByCategory("Travel")'><a>Travel</a></div>
+        <div class="itm" @onclick='() => FetchBlogsByCategory("Adventure")'><a>Adventure</a></div>
+        <div class="itm" @onclick='() => FetchBlogsByCategory("Movie")'><a>Movie</a></div>
+        <div class="itm" @onclick='() => FetchBlogsByCategory("Tech")'><a>Tech</a></div>
+    </div>
+
+    <div class="contnt">
+        @if (blogs is null)
+        {
+            <p>Loading blogs...</p>
+        }
+        else if (blogs.Count == 0)
+        {
+            <p>No blogs found.</p>
+        }
+        else
+        {
+            @foreach (var blog in displayedBlogs)
+            {
+                <div class="card" @onclick="() => OpenModal(blog)">
+                    <div class="card-image" >
+                        <img src="@blog.ImageUrl" alt="@blog.Title">
+                    </div>
+                    <div class="card-content">
+                        <p class="date">@blog.Date</p>
+                        <h3 class="title">@blog.Title</h3>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <!-- Blog Modal Popup -->
+    @if (selectedBlog != null)
+    {
+        <div class="modal-overlay" @onclick="CloseModal">
+            <div class="modal-content" @onclick:stopPropagation>
+                <button class="close-btn" @onclick="CloseModal">&times;</button>
+                <img src="@selectedBlog.ImageUrl" alt="@selectedBlog.Title">
+                <h2>@selectedBlog.Title</h2>
+                <p class="date">@selectedBlog.Date</p>
+                <p class="category">Category: @selectedBlog.Category</p>
+                <p class="description">@selectedBlog.Description</p>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<Slide> blogs = new();
+    private List<Slide> displayedBlogs = new();
+    private int maxDisplayCount = 6;
+    private Slide? selectedBlog;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchBlogsByCategory(null);
+    }
+
+    private async Task FetchBlogsByCategory(string? category)
+    {
+        try
+        {
+            string baseUrl = "https://localhost:7061";
+            string url = category is null ? $"{baseUrl}/api/slider" : $"{baseUrl}/api/slider/category/{category}";
+
+            blogs = await Http.GetFromJsonAsync<List<Slide>>(url) ?? new();
+            displayedBlogs = blogs.Take(maxDisplayCount).ToList();
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"Error fetching blogs: {ex.Message}");
+        }
+    }
+
+    private void OpenModal(Slide blog)
+    {
+        selectedBlog = blog;
+    }
+
+    private void CloseModal()
+    {
+        selectedBlog = null;
+    }
+
+    public class Slide
+    {
+        public string Id { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Date { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+    }
+}
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .itm {
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+        background-color: #111;
+    }
+
+
+
+    .content-sec {
+        width: 1100px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .card {
+        width: 300px;
+        height:300px;
+        background: #1a1a1a;
+        color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+    .card-image img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .card-content {
+        padding: 15px;
+    }
+
+    .date {
+        font-size: 12px;
+        color: #aaa;
+        margin-bottom: 5px;
+    }
+
+    .title {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .description {
+        font-size: 13px;
+        color: #ccc;
+        line-height: 1.4;
+    }
+
+    .contnt {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        
+        align-items: flex-start;
+        max-width: 1100px;
+        padding: 10px;
+       
+    }
+
+    .show-more-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .show-more-btn {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+        .show-more-btn:hover {
+            background-color: #0056b3;
+        }
+
+
+    /* Modal Styling */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh; /* Ensure full height */
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center; /* Centers horizontally */
+        align-items: center; /* Centers vertically */
+        z-index: 1000;
+        overflow-y:auto;
+    }
+
+
+    .modal-content {
+        background: #fff;
+        width: 500px;
+        padding: 20px;
+        border-radius: 10px;
+        position: relative;
+        text-align: center;
+    }
+
+        .modal-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .modal-content h2 {
+            margin-top: 10px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .modal-content .date, .modal-content .category {
+            font-size: 14px;
+            color: #555;
+            margin: 5px 0;
+        }
+
+        .modal-content .description {
+            font-size: 16px;
+            color: #222;
+            line-height: 1.5;
+        }
+
+    /* Close Button */
+    .close-btn {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #333;
+        cursor: pointer;
+    }
+
+    .show-more-btn {
+        margin: 20px auto;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        display: block;
+        transition: background 0.3s;
+    }
+
+        .show-more-btn:hover {
+            background-color: #0056b3;
+        }
+
+    .contnt::-webkit-scrollbar {
+        display: none;}
+
+        .interaction {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .like-btn, .comment-btn {
+            background: #ff6600;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+            .like-btn:hover, .comment-btn:hover {
+                background: #cc5500;
+            }
+
+        /* Comment Modal */
+        .modal-content ul {
+            list-style: none;
+            padding: 0;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+            .modal-content ul li {
+                background: #333;
+                padding: 10px;
+                margin-bottom: 5px;
+                border-radius: 5px;
+                text-align: left;
+                color: white;
+            }
+
+        .modal-content input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background: #111;
+            color: white;
+        }
+
+        .submit-btn {
+            background: #ff6600;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+            .submit-btn:hover {
+                background: #cc5500;
+            }
+
+</style>

@@ -1,0 +1,122 @@
+﻿@inherits LayoutComponentBase
+
+
+<div class="page">
+ 
+    <main>
+       <div class="whole-nav">
+           <div class="left-side">
+               <h3>Blog Site</h3>
+           </div>
+           <div class="right-side">
+               <div class="data">
+                   <div class="item">
+                       <a>Home</a>
+                   </div>
+                    <div class ="item">
+                        <a href="/post-slide">Add Blog</a>
+                   </div>
+                    <div class="item">
+                        <a>Article</a>
+                    </div>
+                    <div class="item">
+                        <a>Contact us</a>
+                    </div>
+               </div>
+               <div class="small-line"></div>
+                <div class="right-right">
+                    <a href="mailto:santhoshvenugopal2004@gmail.com" target="_blank">
+                        <div class="right-rights">
+                            <img src="./Email.svg" />
+                        </div>
+                    </a>
+                    <div class="right-rights">
+                        <a href="https://www.linkedin.com/in/santhosh-v-p/" target="_blank">
+                            <img src="./LinkedIn.svg" />
+                        </a>
+                    </div>
+
+                    <div class="right-rights">
+                        <a href="https://wa.me/9715524124" target="_blank">
+                            <img src="./WhatsApp.svg" />
+                        </a>
+                      
+                    </div>
+                    <div class="right-rights">
+                        <a href="https://github.com/Sandy-8-bit" target="_blank">
+                            <img src="./GitHub.svg" />
+                        </a>
+                    </div>
+               </div>
+           </div>
+       </div>
+
+
+        <div>
+                @Body
+            </div>
+        
+
+    </main>
+</div>
+
+
+<style>
+    .right-rights{
+
+    }
+    h3{
+        margin:0px;
+    }
+
+    .whole-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000; /* Ensures navbar is on top */
+       background-color:white;
+       display:flex;
+       justify-content:space-between;
+       padding:20px;
+    }
+
+    .data{
+        display:flex;
+        gap:20px;
+        font-size:22px;
+    }
+
+    .right-side{
+        display:flex;
+        gap:20px;
+    }
+    .right-right{
+        display:flex;
+        gap:15px;
+    }
+
+    .right-rights img  {
+       cursor:pointer;
+       width:48px;
+       height:35px;
+    }
+
+    .item{
+        cursor: pointer;
+        font-weight:700;
+        font-family: 'Montserrat', sans-serif;
+        
+    }
+    .item a{
+            text-decoration: none;
+            color:black;
+    }
+
+    .small-line {
+        height:30px;
+        background-color:black;
+        width:2px;
+    }
+
+</style>
