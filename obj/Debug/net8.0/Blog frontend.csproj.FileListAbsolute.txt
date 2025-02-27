@@ -1062,3 +1062,4 @@ C:\Users\santh\source\repos\Blog frontend\obj\Debug\net8.0\Blog frontend.dll
 C:\Users\santh\source\repos\Blog frontend\obj\Debug\net8.0\refint\Blog frontend.dll
 C:\Users\santh\source\repos\Blog frontend\obj\Debug\net8.0\Blog frontend.pdb
 C:\Users\santh\source\repos\Blog frontend\obj\Debug\net8.0\ref\Blog frontend.dll
+C:\Users\santh\source\repos\Blog frontend\obj\Debug\net8.0\Blog frontend.sourcelink.json

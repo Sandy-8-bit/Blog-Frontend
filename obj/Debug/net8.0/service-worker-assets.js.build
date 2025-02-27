@@ -33,7 +33,7 @@
       "url": "icon-512.png"
     },
     {
-      "hash": "sha256-5466X1VqrEAjRv3MmruWomZquYplCV5UR8bnclbtIAk=",
+      "hash": "sha256-WSc5INq\/8at8mbzbo25IYSK+SsPZrNnK2mfeJZf34AA=",
       "url": "index.html"
     },
     {
@@ -893,17 +893,17 @@
       "url": "_framework\/icudt_no_CJK.dat"
     },
     {
-      "hash": "sha256-yOMNEAd9IzlXt++5cmmtui3Hxh3KPpHlcs5v4Nsekio=",
+      "hash": "sha256-WUjt7ywK12SELiun\/+lrAi58RJ\/yRfhOYGLWlSJfD9U=",
       "url": "_framework\/Blog frontend.wasm"
     },
     {
-      "hash": "sha256-fLubZahKDZXR6USx4VIXsqDCv9vNTkUCrHKbCh6XC4g=",
+      "hash": "sha256-MZZ+P3Zx\/hakzgpFeT2VLoNINhaFOomQt5YuqA8p0XY=",
       "url": "_framework\/Blog frontend.pdb"
     },
     {
-      "hash": "sha256-7Ut1Nh3qwjvYVdv8sNlW2NIRWixJWxhCQw4WV30P0yo=",
+      "hash": "sha256-TQpkTbpzI8QmfQJRAOoRqFcvLg1ZbtW5ESPeG60xOEk=",
       "url": "_framework\/blazor.boot.json"
     }
   ],
-  "version": "KNC+fFYQ"
+  "version": "etx4vy8w"
 };

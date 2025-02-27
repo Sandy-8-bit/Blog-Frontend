@@ -1,6 +1,6 @@
 ﻿@inject HttpClient Http
-@inject NavigationManager Navigation
-
+@inject IJSRuntime JS
+<!-- Main content -->
 <div class="content-sec flex w-[1460px] justify-content-center">
     <div class="top-sec text-white">
         <h2>Popular topics</h2>
@@ -8,102 +8,279 @@
 
     <!-- Category Filter -->
     <div class="categorys d-flex gap-5 text-white">
-        <div class="itm" @onclick='() => FetchBlogsByCategory(null)'><a>All</a></div>
-        <div class="itm" @onclick='() => FetchBlogsByCategory("Travel")'><a>Travel</a></div>
-        <div class="itm" @onclick='() => FetchBlogsByCategory("Adventure")'><a>Adventure</a></div>
-        <div class="itm" @onclick='() => FetchBlogsByCategory("Movie")'><a>Movie</a></div>
-        <div class="itm" @onclick='() => FetchBlogsByCategory("Tech")'><a>Tech</a></div>
+        <div class="itm" @onclick='() => FetchSlidesByCategory(null)'><a>All</a></div>
+        <div class="itm" @onclick='() => FetchSlidesByCategory("Travel")'><a>Travel</a></div>
+        <div class="itm" @onclick='() => FetchSlidesByCategory("Adventure")'><a>Adventure</a></div>
+        <div class="itm" @onclick='() => FetchSlidesByCategory("Movie")'><a>Movie</a></div>
+        <div class="itm" @onclick='() => FetchSlidesByCategory("Tech")'><a>Tech</a></div>
     </div>
 
     <div class="contnt">
-        @if (blogs is null)
+        @if (slides is null)
         {
-            <p>Loading blogs...</p>
+            <p>Loading slides...</p>
         }
-        else if (blogs.Count == 0)
+        else if (slides.Count == 0)
         {
-            <p>No blogs found.</p>
+            <p>No slides found.</p>
         }
         else
         {
-            @foreach (var blog in displayedBlogs)
+            @foreach (var slide in displayedSlides)
             {
-                <div class="card" @onclick="() => OpenModal(blog)">
-                    <div class="card-image" >
-                        <img src="@blog.ImageUrl" alt="@blog.Title">
+                <div class="card" >
+                    <div class="card-image">
+                        <img src="@slide.ImageUrl" alt="@slide.Title">
                     </div>
                     <div class="card-content">
-                        <p class="date">@blog.Date</p>
-                        <h3 class="title">@blog.Title</h3>
+                        <p class="date">@slide.Date</p>
+                        <h3 class="title">@slide.Title</h3>
+                        <div class="interaction">
+                            <button class="like-btn" @onclick="() => LikeSlide(slide.Id!)">❤️ Like (@slide!.Likes!.Count)</button>
+                            <button class="comment-btn" @onclick="() => OpenModal(slide)">💬 Comment (@slide!.Comments!.Count)</button>
+                        </div>
                     </div>
                 </div>
             }
         }
     </div>
 
-    <!-- Blog Modal Popup -->
-    @if (selectedBlog != null)
+    <!-- Comment Modal -->
+    @if (selectedSlide != null)
     {
         <div class="modal-overlay" @onclick="CloseModal">
             <div class="modal-content" @onclick:stopPropagation>
                 <button class="close-btn" @onclick="CloseModal">&times;</button>
-                <img src="@selectedBlog.ImageUrl" alt="@selectedBlog.Title">
-                <h2>@selectedBlog.Title</h2>
-                <p class="date">@selectedBlog.Date</p>
-                <p class="category">Category: @selectedBlog.Category</p>
-                <p class="description">@selectedBlog.Description</p>
+                <h2>@selectedSlide.Title</h2>
+                <p class="date">@selectedSlide.Date</p>
+                <p class="category">Category: @selectedSlide.Category</p>
+                <p class="description">@selectedSlide.Description</p>
+
+                <ul>
+                    @foreach (var comment in selectedSlide.Comments!)
+                    {
+                        <li><strong>@comment.Username:</strong> @comment.Text</li>
+                    }
+                </ul>
+
+
+                <input type="text" @bind="newComment" placeholder="Add a comment...">
+                <button class="submit-btn" @onclick="SubmitComment" disabled="@isLoading">
+                    @(isLoading ? "Posting..." : "Post Comment")
+                </button>
+
             </div>
         </div>
     }
 </div>
 
 @code {
-    private List<Slide> blogs = new();
-    private List<Slide> displayedBlogs = new();
+    private List<Slide> slides = new();
+    private List<Slide> displayedSlides = new();
     private int maxDisplayCount = 6;
-    private Slide? selectedBlog;
+    private Slide? selectedSlide;
+    private string? newComment;
+    private string? username;
+    private bool isLoading = false;
 
     protected override async Task OnInitializedAsync()
     {
-        await FetchBlogsByCategory(null);
+        LoadUsernameFromLocalStorage();
+        await FetchSlidesByCategory(null);
     }
 
-    private async Task FetchBlogsByCategory(string? category)
+    private async Task FetchSlidesByCategory(string? category)
     {
         try
         {
             string baseUrl = "https://localhost:7061";
             string url = category is null ? $"{baseUrl}/api/slider" : $"{baseUrl}/api/slider/category/{category}";
 
-            blogs = await Http.GetFromJsonAsync<List<Slide>>(url) ?? new();
-            displayedBlogs = blogs.Take(maxDisplayCount).ToList();
+            // Disable caching by adding a timestamp query parameter
+            url += $"?timestamp={DateTime.UtcNow.Ticks}";
+
+            slides = await Http.GetFromJsonAsync<List<Slide>>(url) ?? new();
+            displayedSlides = slides.Take(maxDisplayCount).ToList();
+            StateHasChanged();
         }
-        catch (HttpRequestException ex)
+        catch (Exception ex)
         {
-            Console.WriteLine($"Error fetching blogs: {ex.Message}");
+            Console.WriteLine($"Error fetching slides: {ex.Message}");
         }
     }
 
-    private void OpenModal(Slide blog)
+    private void OpenModal(Slide slide)
     {
-        selectedBlog = blog;
+        selectedSlide = slide;
     }
+
 
     private void CloseModal()
     {
-        selectedBlog = null;
+        selectedSlide = null;
+    }
+    private async Task LikeSlide(string slideId)
+    {
+        if (string.IsNullOrEmpty(username))
+        {
+            username = await PromptForUsername();
+            if (string.IsNullOrEmpty(username)) return;
+        }
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync($"https://localhost:7061/api/slider/{slideId}/like", new { Username = username });
+
+            if (response.IsSuccessStatusCode)
+            {
+                var updatedSlide = await response.Content.ReadFromJsonAsync<Slide>();
+                if (updatedSlide != null)
+                {
+                    var slideIndex = slides.FindIndex(s => s.Id == slideId);
+                    if (slideIndex != -1)
+                    {
+                        // Update the slide inside a new list to trigger UI update
+                        slides = slides.Select(s => s.Id == slideId ? updatedSlide : s).ToList();
+                        displayedSlides = slides.Take(maxDisplayCount).ToList();
+                    }
+                }
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error: {errorMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error liking slide: {ex.Message}");
+        }
+
+        // Force UI Update
+        StateHasChanged();
     }
 
+
+    private async Task SubmitComment()
+    {
+        if (string.IsNullOrEmpty(username))
+        {
+            username = await PromptForUsername();
+            if (string.IsNullOrEmpty(username)) return;
+        }
+
+        if (selectedSlide == null || string.IsNullOrWhiteSpace(newComment)) return;
+
+        // Add a loading state
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var commentObj = new Comment { Username = username, Text = newComment, Date = DateTime.UtcNow };
+
+            // Update UI instantly by adding the comment to selectedSlide
+            selectedSlide.Comments!.Add(commentObj);
+            newComment = string.Empty;
+            StateHasChanged(); // Refresh UI immediately
+
+            var response = await Http.PostAsJsonAsync($"https://localhost:7061/api/slider/{selectedSlide.Id}/comment",
+                new { Username = username, Comment = commentObj.Text });
+
+            if (response.IsSuccessStatusCode)
+            {
+                var updatedSlide = await response.Content.ReadFromJsonAsync<Slide>();
+                if (updatedSlide != null)
+                {
+                    // Find the slide and update its comments
+                    var slideIndex = slides.FindIndex(s => s.Id == selectedSlide.Id);
+                    if (slideIndex != -1)
+                    {
+                        slides[slideIndex] = updatedSlide;
+                        displayedSlides = slides.Take(maxDisplayCount).ToList();
+                    }
+
+                    // Also update the selectedSlide in the modal
+                    selectedSlide = updatedSlide;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding comment: {ex.Message}");
+        }
+
+        // Remove loading state
+        isLoading = false;
+        StateHasChanged();
+    }
+
+
+
+    private async Task<string?> PromptForUsername()
+    {
+        string? input = await JS.InvokeAsync<string>("prompt", "Enter your username:");
+        if (!string.IsNullOrEmpty(input))
+        {
+            var expiry = DateTime.UtcNow.AddDays(1);
+            await JS.InvokeVoidAsync("localStorage.setItem", "username", input);
+            await JS.InvokeVoidAsync("localStorage.setItem", "username_expiry", expiry.ToString());
+        }
+        return input;
+    }
+
+    private async void LoadUsernameFromLocalStorage()
+    {
+        string? storedUsername = await JS.InvokeAsync<string>("localStorage.getItem", "username");
+        string? expiryStr = await JS.InvokeAsync<string>("localStorage.getItem", "username_expiry");
+
+        if (!string.IsNullOrEmpty(storedUsername) && DateTime.TryParse(expiryStr, out DateTime expiry) && expiry > DateTime.UtcNow)
+        {
+            username = storedUsername;
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("localStorage.removeItem", "username");
+            await JS.InvokeVoidAsync("localStorage.removeItem", "username_expiry");
+        }
+    }
     public class Slide
     {
-        public string Id { get; set; } = string.Empty;
+       
+        public string? Id { get; set; } = string.Empty;
+
         public string ImageUrl { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public string Date { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+
+        public List<string>? Likes { get; set; } = new(); // Stores usernames who liked the post
+        public List<Comment>? Comments { get; set; } = new(); // Stores comments
+    }
+
+    public class Comment
+    {
+        public string? Username { get; set; } = string.Empty;
+        public string? Text { get; set; } = string.Empty;
+        public DateTime? Date { get; set; }
+    }
+
+
+    public class LikeRequest
+    {
+        public string? Username { get; set; } = string.Empty;
+    }
+
+    public class CommentRequest
+    {
+        public string? Username { get; set; } = string.Empty;
+        public string? Comment { get; set; } = string.Empty;
     }
 }
+
+
+
 
 <style>
     * {
@@ -137,7 +314,7 @@
 
     .card {
         width: 300px;
-        height:300px;
+        height:330px;
         background: #1a1a1a;
         color: white;
         border-radius: 10px;
