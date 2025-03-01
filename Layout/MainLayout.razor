@@ -1,26 +1,26 @@
 ﻿@inherits LayoutComponentBase
-
+@inject IJSRuntime JS
 
 
 <div class="page">
- 
     <main>
        <div class="whole-nav">
            <div class="left-side">
-               <h3>Blog Site</h3>
+               <h3>Sandy's Blog'</h3>
            </div>
            <div class="right-side">
                <div class="data">
                    <div class="item">
-                       <a>Home</a>
+                        <a href="javascript:void(0);" @onclick="ScrollToHome">Home</a>
                    </div>
                     <div class="item">
-                        <a>Blog</a>
+                        <a href="javascript:void(0);" @onclick="ScrollToPopular">Blog</a>
+                    </div>
 
-                    </div>
                     <div class="item">
-                        <a>Contact us</a>
+                        <a href="javascript:void(0);" @onclick="ScrollToFooter">Contact Us</a>
                     </div>
+
                </div>
                <div class="small-line"></div>
                 <div class="right-right">
@@ -61,7 +61,20 @@
 
 
 
-
+@code {
+    private async Task ScrollToPopular()
+    {
+        await JS.InvokeVoidAsync("scrollToPopular");
+    }
+    private async Task ScrollToFooter()
+    {
+        await JS.InvokeVoidAsync("scrollToFooter");
+    }
+    private async Task ScrollToHome()
+    {
+        await JS.InvokeVoidAsync("scrollToHome");
+    }
+}
 
 <style>
     .right-rights{

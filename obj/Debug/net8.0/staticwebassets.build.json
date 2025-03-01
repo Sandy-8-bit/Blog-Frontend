@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "GSg9DCo4B1KdDVmafu7qUvaBdKTA7rHpfIISqW2so+Y=",
+  "Hash": "KtLuhgyyWbj+JAG8CcT7obb4A9OhGsV85S8LSZ2rB5Q=",
   "Source": "Blog frontend",
   "BasePath": "/",
   "Mode": "Root",
@@ -8394,6 +8394,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\pic.webp"
+    },
+    {
+      "Identity": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\site.js",
+      "SourceId": "Blog frontend",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "site.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\site.js"
     },
     {
       "Identity": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\WhatsApp.svg",

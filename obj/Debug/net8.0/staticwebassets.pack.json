@@ -85,6 +85,10 @@
       "PackagePath": "staticwebassets\\pic.webp"
     },
     {
+      "Id": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\site.js",
+      "PackagePath": "staticwebassets\\site.js"
+    },
+    {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.Blog frontend.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },

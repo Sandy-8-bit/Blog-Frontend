@@ -8,7 +8,7 @@
 
 @if (currentSlide != null)
 {
-    <div class="Whole-home flex flex-column gap-5">
+    <div class="Whole-home flex flex-column gap-5" id="Home">
         <div class="slider" style="background-image: url('@currentSlide.ImageUrl');">
             <div class="whole-content">
                 <div class="middle-content">
@@ -25,15 +25,16 @@
             </div>
         </div>
 
-        <div class="Count d-flex justify-content-center w-[1440px] pt-5" >
+        <div id="popular"  class="Count d-flex justify-content-center w-[1440px] pt-5">
             <ErrorBoundary>
                <Popular/>
             </ErrorBoundary>
         </div>
 
-        <div id="popular">
-            <Foot/>
+        <div id="Footer">
+            <Foot />
         </div>
+
        
     </div>
 
