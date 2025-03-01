@@ -25,6 +25,10 @@
       "PackagePath": "staticwebassets\\Email.svg"
     },
     {
+      "Id": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\Footer.png",
+      "PackagePath": "staticwebassets\\Footer.png"
+    },
+    {
       "Id": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\GitHub.svg",
       "PackagePath": "staticwebassets\\GitHub.svg"
     },
@@ -69,16 +73,16 @@
       "PackagePath": "staticwebassets\\index.html"
     },
     {
+      "Id": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\js\\weather.json",
+      "PackagePath": "staticwebassets\\js\\weather.json"
+    },
+    {
       "Id": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\manifest.webmanifest",
       "PackagePath": "staticwebassets\\manifest.webmanifest"
     },
     {
       "Id": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\pic.webp",
       "PackagePath": "staticwebassets\\pic.webp"
-    },
-    {
-      "Id": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\sample-data\\weather.json",
-      "PackagePath": "staticwebassets\\sample-data\\weather.json"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.Blog frontend.Microsoft.AspNetCore.StaticWebAssets.props",

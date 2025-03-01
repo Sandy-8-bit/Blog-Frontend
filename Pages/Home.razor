@@ -1,6 +1,7 @@
 ﻿@page "/"
 @layout MainLayout
 
+
 @inject HttpClient HttpClient
 
 <PageTitle>Home</PageTitle>
@@ -24,11 +25,16 @@
             </div>
         </div>
 
-        <div class="Count d-flex justify-content-center w-[1440px] pt-5">
+        <div class="Count d-flex justify-content-center w-[1440px] pt-5" >
             <ErrorBoundary>
                <Popular/>
             </ErrorBoundary>
         </div>
+
+        <div id="popular">
+            <Foot/>
+        </div>
+       
     </div>
 
 }
@@ -126,7 +132,7 @@ else
     }
 
     .slider {
-        width: 1540px;
+        width: 1510px;
         height: 600px;
         background-color: black;
         background-size: cover;

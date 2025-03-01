@@ -21,6 +21,10 @@
       "url": "favicon.png"
     },
     {
+      "hash": "sha256-VkYdctNuUgZQXlqCdnK+qUxXD2jknmzS76qG56dHp+o=",
+      "url": "Footer.png"
+    },
+    {
       "hash": "sha256-K0rjk5BZAprCfm7b9leuocghUR6S1goDKBef2ajNkuE=",
       "url": "GitHub.svg"
     },
@@ -33,12 +37,16 @@
       "url": "icon-512.png"
     },
     {
-      "hash": "sha256-WSc5INq\/8at8mbzbo25IYSK+SsPZrNnK2mfeJZf34AA=",
+      "hash": "sha256-IcH1iw3Q7ejwRP6IJQ59Ix5wSII6Lvx3kItE15tbEp4=",
       "url": "index.html"
     },
     {
       "hash": "sha256-EA10Ue5380MPoyM3+I2Wqzpo57OmRyntmfjJsRRY5LU=",
       "url": "Instagram.svg"
+    },
+    {
+      "hash": "sha256-enKgCMkYmCpfEcmg6Annbmc40VZ\/A6aYYSQjZfVn2cU=",
+      "url": "js\/weather.json"
     },
     {
       "hash": "sha256-M0tjn4k2DQNhJuuEadEZbMVrrt26LLroNpkA+P43t5Q=",
@@ -51,10 +59,6 @@
     {
       "hash": "sha256-MMYYas7TrZNseid\/wXZL+bh\/786Wnlthl3\/35GYfCgA=",
       "url": "pic.webp"
-    },
-    {
-      "hash": "sha256-enKgCMkYmCpfEcmg6Annbmc40VZ\/A6aYYSQjZfVn2cU=",
-      "url": "sample-data\/weather.json"
     },
     {
       "hash": "sha256-7\/HuNE4rO5+LOyIIWW+CGmhU\/KdM68Wap1J8yaQJmzc=",
@@ -893,17 +897,17 @@
       "url": "_framework\/icudt_no_CJK.dat"
     },
     {
-      "hash": "sha256-WUjt7ywK12SELiun\/+lrAi58RJ\/yRfhOYGLWlSJfD9U=",
+      "hash": "sha256-\/wjbUBLCN3T3gRyqOYtrN0XRO40sduTVIouVRejYlyg=",
       "url": "_framework\/Blog frontend.wasm"
     },
     {
-      "hash": "sha256-MZZ+P3Zx\/hakzgpFeT2VLoNINhaFOomQt5YuqA8p0XY=",
+      "hash": "sha256-DVYSCKmqKR\/irKg4ixrQuA0PEc4FYnpTEQxqESmz0ts=",
       "url": "_framework\/Blog frontend.pdb"
     },
     {
-      "hash": "sha256-TQpkTbpzI8QmfQJRAOoRqFcvLg1ZbtW5ESPeG60xOEk=",
+      "hash": "sha256-dH8pCPKrJl1wskEqOCNPzzS2kMLYgbtYgMBR5vDHtME=",
       "url": "_framework\/blazor.boot.json"
     }
   ],
-  "version": "etx4vy8w"
+  "version": "4Wif1UoQ"
 };

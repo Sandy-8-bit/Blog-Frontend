@@ -1,0 +1,157 @@
+﻿@page "/login"
+@inject NavigationManager Navigation
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<div class="login-container">
+    <h3>Welcome Back</h3>
+    <p class="subtitle">Sign in to continue</p>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert">@ErrorMessage</div>
+    }
+
+    <div class="form-group">
+        <label>Email:</label>
+        <input @bind="Email" class="form-control animated-input" type="email" placeholder="Enter your email" />
+    </div>
+    <div class="form-group">
+        <label>Password:</label>
+        <input @bind="Password" type="password" class="form-control animated-input" placeholder="Enter your password" />
+    </div>
+    <button @onclick="Logins" class="btn-primary">Login</button>
+</div>
+
+@code {
+    private string Email { get; set; } = "";
+    private string Password { get; set; } = "";
+    private string ErrorMessage { get; set; } = "";
+
+    private async Task Logins()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/auth/login", new { Email, Password });
+
+            if (response.IsSuccessStatusCode)
+            {
+                await JS.InvokeVoidAsync("alert", "Login Successful!");
+                Navigation.NavigateTo("/post-slide"); // Redirect after login
+            }
+            else
+            {
+                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                ErrorMessage = error?["message"] ?? "Login failed!";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "An error occurred: " + ex.Message;
+        }
+    }
+}
+<style>
+    /* Centered Glassmorphic Login Container */
+    .login-container {
+        width: 350px;
+        margin: 100px auto;
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.2); /* Adjusted transparency */
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        animation: fadeIn 0.6s ease-in-out;
+    }
+
+    h3 {
+        font-size: 24px;
+        color: #222; /* Ensuring visibility */
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .subtitle {
+        font-size: 14px;
+        color: #555; /* Darker text */
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        text-align: left;
+        margin-bottom: 15px;
+    }
+
+    label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+        color: #222; /* Fixed invisible text */
+    }
+
+    /* Improved Input Fields */
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        background: white;
+        color: #222; /* Ensured visibility */
+        outline: none;
+        transition: 0.3s;
+    }
+
+    .form-control::placeholder {
+        color: #777; /* Darker placeholders */
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.6);
+    }
+
+    /* Button with Hover Effect */
+    .btn-primary {
+        width: 100%;
+        padding: 12px;
+        font-size: 18px;
+        font-weight: bold;
+        background: linear-gradient(45deg, #00ccff, #007bff);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        cursor: pointer;
+        transition: 0.3s ease-in-out;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #007bff, #00ccff);
+        transform: scale(1.05);
+    }
+
+    /* Alert Box */
+    .alert {
+        padding: 10px;
+        background: #ff4d4d;
+        color: white;
+        border-radius: 5px;
+        margin: 10px 0;
+        font-size: 14px;
+    }
+
+    /* Keyframe Animations */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+

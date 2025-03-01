@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "0vIcbidKafrufx5QaKOu2wrqdEwYTR/tIo/1ckltGWc=",
+  "Hash": "GSg9DCo4B1KdDVmafu7qUvaBdKTA7rHpfIISqW2so+Y=",
   "Source": "Blog frontend",
   "BasePath": "/",
   "Mode": "Root",
@@ -8206,6 +8206,25 @@
       "OriginalItemSpec": "wwwroot\\favicon.png"
     },
     {
+      "Identity": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\Footer.png",
+      "SourceId": "Blog frontend",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "Footer.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Footer.png"
+    },
+    {
       "Identity": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\GitHub.svg",
       "SourceId": "Blog frontend",
       "SourceType": "Discovered",
@@ -8301,6 +8320,25 @@
       "OriginalItemSpec": "wwwroot\\Instagram.svg"
     },
     {
+      "Identity": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\js\\weather.json",
+      "SourceId": "Blog frontend",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "js/weather.json",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\weather.json"
+    },
+    {
       "Identity": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\LinkedIn.svg",
       "SourceId": "Blog frontend",
       "SourceType": "Discovered",
@@ -8356,25 +8394,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\pic.webp"
-    },
-    {
-      "Identity": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\sample-data\\weather.json",
-      "SourceId": "Blog frontend",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\",
-      "BasePath": "/",
-      "RelativePath": "sample-data/weather.json",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\sample-data\\weather.json"
     },
     {
       "Identity": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\WhatsApp.svg",

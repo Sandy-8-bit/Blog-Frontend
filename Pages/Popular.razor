@@ -29,14 +29,16 @@
             @foreach (var slide in displayedSlides)
             {
                 <div class="card" >
-                    <div class="card-image">
+                    <div class="card-image" @onclick="() => OpenModal(slide)">
                         <img src="@slide.ImageUrl" alt="@slide.Title">
                     </div>
                     <div class="card-content">
                         <p class="date">@slide.Date</p>
                         <h3 class="title">@slide.Title</h3>
                         <div class="interaction">
-                            <button class="like-btn" @onclick="() => LikeSlide(slide.Id!)">❤️ Like (@slide!.Likes!.Count)</button>
+                            <button class="like-btn" @onclick="() => ToggleLike(slide.Id!)">
+                                @(slide.Likes!.Contains(username!) ? "❤️" : "🤍") (@slide!.Likes!.Count)
+                            </button>
                             <button class="comment-btn" @onclick="() => OpenModal(slide)">💬 Comment (@slide!.Comments!.Count)</button>
                         </div>
                     </div>
@@ -119,7 +121,7 @@
     {
         selectedSlide = null;
     }
-    private async Task LikeSlide(string slideId)
+    private async Task ToggleLike(string slideId)
     {
         if (string.IsNullOrEmpty(username))
         {
@@ -127,38 +129,59 @@
             if (string.IsNullOrEmpty(username)) return;
         }
 
+        var slide = slides.FirstOrDefault(s => s.Id == slideId);
+        if (slide == null) return;
+
+        bool hasLiked = slide.Likes!.Contains(username);
+
+        // Optimistically update UI
+        if (hasLiked)
+        {
+            slide.Likes!.Remove(username);
+        }
+        else
+        {
+            slide.Likes!.Add(username);
+        }
+        StateHasChanged(); // Update the UI immediately
+
         try
         {
-            var response = await Http.PostAsJsonAsync($"https://localhost:7061/api/slider/{slideId}/like", new { Username = username });
+            HttpResponseMessage response = hasLiked
+                ? await Http.PostAsJsonAsync($"https://localhost:7061/api/slider/{slideId}/unlike", new { Username = username })
+                : await Http.PostAsJsonAsync($"https://localhost:7061/api/slider/{slideId}/like", new { Username = username });
 
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                var updatedSlide = await response.Content.ReadFromJsonAsync<Slide>();
-                if (updatedSlide != null)
+                // Revert UI change if API call fails
+                if (hasLiked)
                 {
-                    var slideIndex = slides.FindIndex(s => s.Id == slideId);
-                    if (slideIndex != -1)
-                    {
-                        // Update the slide inside a new list to trigger UI update
-                        slides = slides.Select(s => s.Id == slideId ? updatedSlide : s).ToList();
-                        displayedSlides = slides.Take(maxDisplayCount).ToList();
-                    }
+                    slide.Likes!.Add(username);
                 }
-            }
-            else
-            {
-                var errorMessage = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Error: {errorMessage}");
+                else
+                {
+                    slide.Likes!.Remove(username);
+                }
+                StateHasChanged();
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error liking slide: {ex.Message}");
-        }
+            Console.WriteLine($"Error toggling like: {ex.Message}");
 
-        // Force UI Update
-        StateHasChanged();
+            // Revert UI on error
+            if (hasLiked)
+            {
+                slide.Likes!.Add(username);
+            }
+            else
+            {
+                slide.Likes!.Remove(username);
+            }
+            StateHasChanged();
+        }
     }
+
 
 
     private async Task SubmitComment()
