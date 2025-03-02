@@ -37,7 +37,7 @@
       "url": "icon-512.png"
     },
     {
-      "hash": "sha256-56c\/\/QFRqiizYE8NAregzo0uP\/zr1mthOZjLMG3xPbo=",
+      "hash": "sha256-qePInCHQZTCMma5J9qUx1ACfyFtaWDqWhCLIZmtKyQA=",
       "url": "index.html"
     },
     {
@@ -61,7 +61,7 @@
       "url": "pic.webp"
     },
     {
-      "hash": "sha256-TYxVQjJacqADz+RED59zT\/4AZQBVDDCJ9CocPYBcK7U=",
+      "hash": "sha256-fH7XXBmHM88k7Wo3sIpUE0rNXrMBuWiEj4HxFgt5YxI=",
       "url": "site.js"
     },
     {
@@ -901,17 +901,17 @@
       "url": "_framework\/icudt_no_CJK.dat"
     },
     {
-      "hash": "sha256-3C\/cllyogMwuNyB5nbUuE23hPDDAQxkezfwXXIksr9g=",
+      "hash": "sha256-Y4ZopQLVziD1yiMbJswsTWG47qVfPZFOEgWVArETBK0=",
       "url": "_framework\/Blog frontend.wasm"
     },
     {
-      "hash": "sha256-C6srZeGhFWPGBCr6bG9nF2jV5T\/p9uYp99mQMBR3M54=",
+      "hash": "sha256-hRJSKlu+zb5Z3U4pd6r8+XSxiugkVMWGccHH6rnZdmI=",
       "url": "_framework\/Blog frontend.pdb"
     },
     {
-      "hash": "sha256-Zvilx4rdfoYEW3rULbYQyWpyi4Sh3F5GMgx\/aDyB510=",
+      "hash": "sha256-+AumAHjEozm9P0EzJ37WwM0qTZd+5u7tTP7BPLMGjsA=",
       "url": "_framework\/blazor.boot.json"
     }
   ],
-  "version": "Dd1esEHB"
+  "version": "6FvtrYl8"
 };

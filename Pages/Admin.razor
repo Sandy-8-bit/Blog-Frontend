@@ -1,0 +1,461 @@
+﻿@page "/admin"
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+<!-- Main content -->
+<div class="content-sec">
+    <div class="top-sec">
+        <h2>Admin Dashboard</h2>
+    </div>
+
+    <!-- Post Slide Button -->
+    <div class="admin-actions">
+        <button class="post-slide-btn" @onclick="NavigateToPostSlide">Post New Slide</button>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="categorys">
+        <div class="itm" @onclick='() => FetchSlidesByCategory(null)'><a>All</a></div>
+        <div class="itm" @onclick='() => FetchSlidesByCategory("Travel")'><a>Travel</a></div>
+        <div class="itm" @onclick='() => FetchSlidesByCategory("Adventure")'><a>Adventure</a></div>
+        <div class="itm" @onclick='() => FetchSlidesByCategory("Movie")'><a>Movie</a></div>
+        <div class="itm" @onclick='() => FetchSlidesByCategory("Tech")'><a>Tech</a></div>
+    </div>
+
+    <div class="contnt">
+        @if (slides is null)
+        {
+            <div class="loader"></div>
+        }
+        else if (slides.Count == 0)
+        {
+            <p class="no-slides">No slides found.</p>
+        }
+        else
+        {
+            @foreach (var slide in displayedSlides)
+            {
+                <div class="card">
+                    <div class="card-image">
+                        <img src="@slide.ImageUrl" alt="@slide.Title">
+                        <div class="category-badge">@slide.Category</div>
+                    </div>
+                    <div class="card-content">
+                        <p class="date">@slide.Date</p>
+                        <h3 class="title">@slide.Title</h3>
+                        <div class="interaction">
+                            <button class="edit-btn" @onclick="() => OpenEditSlideModal(slide)">Edit</button>
+                            <button class="delete-btn" @onclick="() => DeleteSlide(slide.Id!)">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <!-- Edit Slide Modal -->
+    @if (isEditSlideModalOpen)
+    {
+        <div class="modal-overlay" @onclick="CloseModal">
+            <div class="modal-content" @onclick:stopPropagation>
+                <button class="close-btn" @onclick="CloseModal">&times;</button>
+
+                <div class="modal-header">
+                    <h2>Edit Slide</h2>
+                </div>
+
+                <div class="modal-form">
+                    <input type="text" @bind="selectedSlide!.Title" placeholder="Title" class="form-input">
+                    <input type="text" @bind="selectedSlide!.Category" placeholder="Category" class="form-input">
+                    <input type="text" @bind="selectedSlide!.ImageUrl" placeholder="Image URL" class="form-input">
+                    <textarea @bind="selectedSlide!.Description" placeholder="Description" class="form-textarea"></textarea>
+                    <button class="submit-btn" @onclick="UpdateSlide">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<Slide> slides = new();
+    private List<Slide> displayedSlides = new();
+    private int maxDisplayCount = 6;
+    private Slide? selectedSlide;
+    private bool isEditSlideModalOpen = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchSlidesByCategory(null);
+    }
+
+    private async Task FetchSlidesByCategory(string? category)
+    {
+        try
+        {
+            string baseUrl = "https://localhost:7061";
+            string url = category is null ? $"{baseUrl}/api/slider" : $"{baseUrl}/api/slider/category/{category}";
+
+            // Disable caching by adding a timestamp query parameter
+            url += $"?timestamp={DateTime.UtcNow.Ticks}";
+
+            slides = await Http.GetFromJsonAsync<List<Slide>>(url) ?? new();
+            displayedSlides = slides.Take(maxDisplayCount).ToList();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching slides: {ex.Message}");
+        }
+    }
+
+    private void OpenEditSlideModal(Slide slide)
+    {
+        selectedSlide = slide;
+        isEditSlideModalOpen = true;
+    }
+
+    private void CloseModal()
+    {
+        selectedSlide = null;
+        isEditSlideModalOpen = false;
+    }
+
+    private async Task UpdateSlide()
+    {
+        if (selectedSlide == null) return;
+
+        try
+        {
+            var response = await Http.PutAsJsonAsync($"https://localhost:7061/api/slider/{selectedSlide.Id}", selectedSlide);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Refresh the slides after updating
+                await FetchSlidesByCategory(null);
+                CloseModal();
+            }
+            else
+            {
+                Console.WriteLine("Failed to update slide.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating slide: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteSlide(string slideId)
+    {
+        try
+        {
+            var response = await Http.DeleteAsync($"https://localhost:7061/api/slider/{slideId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Refresh the slides after deletion
+                await FetchSlidesByCategory(null);
+            }
+            else
+            {
+                Console.WriteLine("Failed to delete slide.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting slide: {ex.Message}");
+        }
+    }
+
+    private void NavigateToPostSlide()
+    {
+        Navigation.NavigateTo("/post-slide"); // Navigate to the Post Slide page
+    }
+
+    public class Slide
+    {
+        public string? Id { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Date { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+    }
+}
+
+<style>
+    /* Post Slide Button */
+    .post-slide-btn {
+        background: linear-gradient(45deg, #00ccff, #007bff);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s ease-in-out;
+        display:flex;
+        justify-content:center;
+    }
+
+        .post-slide-btn:hover {
+            background: linear-gradient(45deg, #007bff, #00ccff);
+            transform: scale(1.05);
+        }
+
+    /* Admin Actions Section */
+    .admin-actions {
+        margin-bottom: 20px;
+        text-align: right;
+        display: flex;
+        justify-content: center;
+    }
+</style>
+<style>
+    /* Base styles and resets */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', 'Segoe UI', sans-serif;
+    }
+
+    body {
+        background-color: #0f0f13;
+        color: #e0e0e0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    /* Main content section */
+    .content-sec {
+        margin: 0 auto;
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    /* Section title */
+    .top-sec h2 {
+        font-size: 32px;
+        font-weight: 700;
+        background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 5px;
+        text-align: center;
+    }
+
+    /* Category navigation */
+    .categorys {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+
+    .itm {
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        position: relative;
+        padding: 8px 16px;
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .itm:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .itm::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+        transition: width 0.3s ease, left 0.3s ease;
+    }
+
+    .itm:hover::after {
+        width: 80%;
+        left: 10%;
+    }
+
+    /* Cards container */
+    .contnt {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        justify-content: center;
+    }
+
+    /* Card styling */
+    .card {
+        position: relative;
+        background: rgba(20, 20, 30, 0.5);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-image {
+        position: relative;
+        height: 180px;
+        overflow: hidden;
+    }
+
+    .card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .category-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .card-content {
+        padding: 20px;
+    }
+
+    .date {
+        font-size: 12px;
+        color: #aaa;
+        margin-bottom: 8px;
+    }
+
+    .title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .interaction {
+        display: flex;
+        gap: 10px;
+    }
+
+    .edit-btn, .delete-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .edit-btn {
+        background: #3a7bd5;
+        color: white;
+    }
+
+    .edit-btn:hover {
+        background: #2c5fa3;
+    }
+
+    .delete-btn {
+        background: #ff4d4d;
+        color: white;
+    }
+
+    .delete-btn:hover {
+        background: #cc3d3d;
+    }
+
+    /* Modal styling */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: #1a1a25;
+        width: 100%;
+        max-width: 500px;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+        margin-bottom: 20px;
+    }
+
+    .modal-header h2 {
+        font-size: 24px;
+        font-weight: 600;
+        color: white;
+    }
+
+    .modal-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .form-input, .form-textarea {
+        padding: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+        font-size: 14px;
+    }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .submit-btn {
+        background: #3a7bd5;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .submit-btn:hover {
+        background: #2c5fa3;
+    }
+</style>

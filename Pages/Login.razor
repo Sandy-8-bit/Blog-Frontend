@@ -37,7 +37,7 @@
             if (response.IsSuccessStatusCode)
             {
                 await JS.InvokeVoidAsync("alert", "Login Successful!");
-                Navigation.NavigateTo("/post-slide"); // Redirect after login
+                Navigation.NavigateTo("/admin"); // Redirect after login
             }
             else
             {

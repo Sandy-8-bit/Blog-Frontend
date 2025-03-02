@@ -1,13 +1,14 @@
 ﻿@inject HttpClient Http
 @inject IJSRuntime JS
+
 <!-- Main content -->
-<div class="content-sec flex w-[1460px] justify-content-center">
-    <div class="top-sec text-white">
+<div class="content-sec">
+    <div class="top-sec">
         <h2>Popular topics</h2>
     </div>
 
     <!-- Category Filter -->
-    <div class="categorys d-flex gap-5 text-white">
+    <div class="categorys">
         <div class="itm" @onclick='() => FetchSlidesByCategory(null)'><a>All</a></div>
         <div class="itm" @onclick='() => FetchSlidesByCategory("Travel")'><a>Travel</a></div>
         <div class="itm" @onclick='() => FetchSlidesByCategory("Adventure")'><a>Adventure</a></div>
@@ -18,28 +19,33 @@
     <div class="contnt">
         @if (slides is null)
         {
-            <p>Loading slides...</p>
+            <div class="loader"></div>
         }
         else if (slides.Count == 0)
         {
-            <p>No slides found.</p>
+            <p class="no-slides">No slides found.</p>
         }
         else
         {
             @foreach (var slide in displayedSlides)
             {
-                <div class="card" >
+                <div class="card">
                     <div class="card-image" @onclick="() => OpenModal(slide)">
                         <img src="@slide.ImageUrl" alt="@slide.Title">
+                        <div class="category-badge">@slide.Category</div>
                     </div>
                     <div class="card-content">
                         <p class="date">@slide.Date</p>
                         <h3 class="title">@slide.Title</h3>
                         <div class="interaction">
                             <button class="like-btn" @onclick="() => ToggleLike(slide.Id!)">
-                                @(slide.Likes!.Contains(username!) ? "❤️" : "🤍") (@slide!.Likes!.Count)
+                                <span class="like-icon">@(slide.Likes!.Contains(username!) ? "❤️" : "🤍")</span> 
+                                <span class="like-count">@slide!.Likes!.Count</span>
                             </button>
-                            <button class="comment-btn" @onclick="() => OpenModal(slide)">💬 Comment (@slide!.Comments!.Count)</button>
+                            <button class="comment-btn" @onclick="() => OpenModal(slide)">
+                                <span class="comment-icon">💬</span>
+                                <span class="comment-count">@slide!.Comments!.Count</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -53,24 +59,62 @@
         <div class="modal-overlay" @onclick="CloseModal">
             <div class="modal-content" @onclick:stopPropagation>
                 <button class="close-btn" @onclick="CloseModal">&times;</button>
-                <h2>@selectedSlide.Title</h2>
-                <p class="date">@selectedSlide.Date</p>
-                <p class="category">Category: @selectedSlide.Category</p>
-                <p class="description">@selectedSlide.Description</p>
+                
+                <div class="modal-header">
+                    <h2>@selectedSlide.Title</h2>
+                    <div class="modal-meta">
+                        <span class="modal-date">@selectedSlide.Date</span>
+                        <span class="modal-category">@selectedSlide.Category</span>
+                    </div>
+                </div>
+                
+                <div class="modal-description">
+                    <p>@selectedSlide.Description</p>
+                    <div class="comment-form">
+                        <input type="text" @bind="newComment" placeholder="Add a comment..." class="comment-input">
+                        <button class="submit-btn" @onclick="SubmitComment" disabled="@isLoading">
+                            @if (isLoading)
+                            {
+                                <span class="spinner"></span>
+                            }
+                            else
+                            {
+                                <span>Post</span>
+                            }
+                        </button>
+                </div>
 
-                <ul>
-                    @foreach (var comment in selectedSlide.Comments!)
-                    {
-                        <li><strong>@comment.Username:</strong> @comment.Text</li>
-                    }
-                </ul>
-
-
-                <input type="text" @bind="newComment" placeholder="Add a comment...">
-                <button class="submit-btn" @onclick="SubmitComment" disabled="@isLoading">
-                    @(isLoading ? "Posting..." : "Post Comment")
-                </button>
-
+                <div class="comments-section">
+                    <h3>Comments (@selectedSlide.Comments!.Count)</h3>
+                    
+                    <div class="comments-list">
+                        @if (selectedSlide.Comments!.Count == 0)
+                        {
+                            <div class="no-comments">Be the first to comment!</div>
+                        }
+                        else
+                        {
+                            @foreach (var comment in selectedSlide.Comments!)
+                            {
+                                <div class="comment-item">
+                                    <div class="comment-avatar">
+                                        @comment.Username![0]
+                                    </div>
+                                    <div class="comment-content">
+                                        <div class="comment-author">@comment.Username</div>
+                                        <div class="comment-text">@comment.Text</div>
+                                        <div class="comment-date">
+                                            @(comment.Date.HasValue ? comment.Date.Value.ToString("MMM dd, yyyy") : "")
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    
+                    
+                    </div>
+                </div>
             </div>
         </div>
     }
@@ -302,256 +346,549 @@
     }
 }
 
-
-
-
 <style>
+    /* Base styles and resets */
     * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        font-family: 'Arial', sans-serif;
+        font-family: 'Poppins', 'Segoe UI', sans-serif;
+    }
+
+    body {
+        background-color: #0f0f13;
+        color: #e0e0e0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    /* Main content section */
+    .content-sec {
+        
+        margin: 0 auto;
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    /* Section title */
+    .top-sec h2 {
+        font-size: 32px;
+        font-weight: 700;
+        background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 5px;
+        text-align: center;
+    }
+
+    /* Category navigation */
+    .categorys {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
     }
 
     .itm {
         font-size: 16px;
+        font-weight: 500;
         cursor: pointer;
+        position: relative;
+        padding: 8px 16px;
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
     }
 
-    body {
-        display: flex;
+    .itm:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .itm::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+        transition: width 0.3s ease, left 0.3s ease;
+    }
+
+    .itm:hover::after {
+        width: 80%;
+        left: 10%;
+    }
+
+    /* Cards container */
+    .contnt {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* Ensures exactly 2 items per row */
+        gap: 30px;
         justify-content: center;
-        align-items: center;
-        
-        background-color: #111;
     }
 
 
-
-    .content-sec {
-        width: 1100px;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
+    /* Loading indicator */
+    .loader {
+        width: 50px;
+        height: 50px;
+        border: 5px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        border-top-color: #3a7bd5;
+        margin: 50px auto;
+        animation: spin 1s linear infinite;
     }
 
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .no-slides {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 50px;
+        font-size: 18px;
+        color: #777;
+    }
+
+    /* Card styling */
     .card {
-        width: 300px;
-        height:330px;
-        background: #1a1a1a;
-        color: white;
-        border-radius: 10px;
+        position: relative;
+        background: rgba(20, 20, 30, 0.5);
+        border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        cursor: pointer;
-        transition: transform 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-        .card:hover {
-            transform: scale(1.05);
-        }
+    .card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    }
+
+    .card::before {
+        content: '';
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        right: -5px;
+        bottom: -5px;
+        z-index: -1;
+        background: linear-gradient(45deg, #3a7bd5, #00d2ff, #3a7bd5);
+        background-size: 200% 200%;
+        border-radius: 20px;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    .card:hover::before {
+        opacity: 0.5;
+        animation: gradientBG 3s ease infinite;
+    }
+
+    @@keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .card-image {
+        position: relative;
+        height: 180px;
+        overflow: hidden;
+        cursor: pointer;
+    }
 
     .card-image img {
         width: 100%;
-        height: 200px;
+        height: 100%;
         object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .card:hover .card-image img {
+        transform: scale(1.1);
+    }
+
+    .category-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        backdrop-filter: blur(4px);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
 
     .card-content {
-        padding: 15px;
+        padding: 20px;
     }
 
     .date {
         font-size: 12px;
         color: #aaa;
-        margin-bottom: 5px;
-    }
-
-    .title {
-        font-size: 16px;
-        font-weight: bold;
         margin-bottom: 8px;
     }
 
-    .description {
-        font-size: 13px;
-        color: #ccc;
-        line-height: 1.4;
+    .title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        line-height: 1.3;
+        transition: color 0.3s ease;
     }
 
-    .contnt {
+    .card:hover .title {
+        background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    /* Card interaction buttons */
+    .interaction {
         display: flex;
-        flex-wrap: wrap;
-        gap: 24px;
-        
-        align-items: flex-start;
-        max-width: 1100px;
-        padding: 10px;
-       
+        justify-content: space-between;
+        margin-top: 15px;
     }
 
-    .show-more-container {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
-
-    .show-more-btn {
-        margin-top: 20px;
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
+    .like-btn, .comment-btn {
+        background: rgba(255, 255, 255, 0.05);
         border: none;
-        border-radius: 5px;
+        padding: 8px 15px;
+        border-radius: 10px;
         cursor: pointer;
-        transition: background 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #ccc;
+        font-weight: 500;
+        transition: all 0.3s ease;
     }
 
-        .show-more-btn:hover {
-            background-color: #0056b3;
-        }
+    .like-btn:hover, .comment-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-3px);
+    }
 
+    .like-btn:active, .comment-btn:active {
+        transform: translateY(0);
+    }
 
-    /* Modal Styling */
+    .like-icon, .comment-icon {
+        font-size: 16px;
+    }
+
+    .like-count, .comment-count {
+        font-size: 14px;
+    }
+
+    /* Modal styling */
     .modal-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        height: 100vh; /* Ensure full height */
-        background: rgba(0, 0, 0, 0.7);
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
         display: flex;
-        justify-content: center; /* Centers horizontally */
-        align-items: center; /* Centers vertically */
+        justify-content: center;
+        align-items: center;
         z-index: 1000;
-        overflow-y:auto;
+        padding: 20px;
     }
-
 
     .modal-content {
-        background: #fff;
-        width: 500px;
-        padding: 20px;
-        border-radius: 10px;
+        background: #1a1a25;
+        width: 100%;
+        max-width: 600px;
+        max-height: 85vh;
+        border-radius: 20px;
+        overflow: hidden;
         position: relative;
-        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        animation: modalEnter 0.3s ease;
     }
 
-        .modal-content img {
-            width: 100%;
-            height: auto;
-            border-radius: 10px;
-        }
+    @@keyframes modalEnter {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
 
-        .modal-content h2 {
-            margin-top: 10px;
-            font-size: 24px;
-            color: #333;
-        }
-
-        .modal-content .date, .modal-content .category {
-            font-size: 14px;
-            color: #555;
-            margin: 5px 0;
-        }
-
-        .modal-content .description {
-            font-size: 16px;
-            color: #222;
-            line-height: 1.5;
-        }
-
-    /* Close Button */
     .close-btn {
         position: absolute;
-        top: 5px;
-        right: 10px;
-        background: none;
+        top: 15px;
+        right: 15px;
+        background: rgba(255, 255, 255, 0.1);
         border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-size: 24px;
-        color: #333;
+        color: #fff;
         cursor: pointer;
+        transition: background 0.3s ease;
+        z-index: 10;
     }
 
-    .show-more-btn {
-        margin: 20px auto;
-        padding: 10px 20px;
-        background-color: #007bff;
+    .close-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .modal-header {
+        padding: 25px 25px 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .modal-header h2 {
+        font-size: 24px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 10px;
+    }
+
+    .modal-meta {
+        display: flex;
+        gap: 15px;
+        color: #aaa;
+        font-size: 14px;
+    }
+
+    .modal-date, .modal-category {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .modal-category {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 3px 10px;
+        border-radius: 12px;
+        color: #3a7bd5;
+    }
+
+    .modal-description {
+        padding: 20px 25px;
+        color: #ddd;
+        line-height: 1.7;
+        font-size: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Comments section styling */
+    .comments-section {
+        padding: 25px;
+        overflow-y: auto;
+    }
+
+    .comments-section h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #fff;
+    }
+
+    .comments-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        max-height: 300px;
+        overflow-y: auto;
+        padding-right: 10px;
+        margin-bottom: 20px;
+    }
+
+    .comments-list::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .comments-list::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+
+    .no-comments {
+        text-align: center;
+        padding: 20px;
+        color: #777;
+        font-style: italic;
+    }
+
+    .comment-item {
+        display: flex;
+        gap: 15px;
+        animation: fadeIn 0.5s ease;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .comment-avatar {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: white;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .comment-content {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 12px 15px;
+        border-radius: 12px;
+        flex-grow: 1;
+        position: relative;
+    }
+
+    .comment-content::before {
+        content: '';
+        position: absolute;
+        top: 15px;
+        left: -8px;
+        width: 0;
+        height: 0;
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+        border-right: 8px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .comment-author {
+        font-weight: 600;
+        color: #3a7bd5;
+        margin-bottom: 5px;
+    }
+
+    .comment-text {
+        color: #ddd;
+        line-height: 1.5;
+    }
+
+    .comment-date {
+        font-size: 12px;
+        color: #777;
+        margin-top: 5px;
+        text-align: right;
+    }
+
+    /* Comment form */
+    .comment-form {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .comment-input {
+        flex-grow: 1;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 12px 15px;
+        color: #fff;
+        font-size: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .comment-input:focus {
+        outline: none;
+        border-color: rgba(58, 123, 213, 0.5);
+        background: rgba(255, 255, 255, 0.07);
+        box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.2);
+    }
+
+    .comment-input::placeholder {
+        color: #777;
+    }
+
+    .submit-btn {
+        background: linear-gradient(45deg, #3a7bd5, #00d2ff);
         color: white;
         border: none;
-        border-radius: 5px;
+        border-radius: 10px;
+        padding: 0 25px;
+        font-weight: 500;
         cursor: pointer;
-        display: block;
-        transition: background 0.3s;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-        .show-more-btn:hover {
-            background-color: #0056b3;
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(58, 123, 213, 0.4);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 0.8s linear infinite;
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .contnt {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         }
 
-    .contnt::-webkit-scrollbar {
-        display: none;}
+        .modal-content {
+            max-width: 95%;
+        }
+    }
 
-        .interaction {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
+    @@media (max-width: 576px) {
+        .categorys {
+            gap: 10px;
         }
 
-        .like-btn, .comment-btn {
-            background: #ff6600;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.3s;
+        .itm {
+            padding: 6px 12px;
+            font-size: 14px;
         }
 
-            .like-btn:hover, .comment-btn:hover {
-                background: #cc5500;
-            }
-
-        /* Comment Modal */
-        .modal-content ul {
-            list-style: none;
-            padding: 0;
-            max-height: 150px;
-            overflow-y: auto;
+        .modal-header h2 {
+            font-size: 20px;
         }
-
-            .modal-content ul li {
-                background: #333;
-                padding: 10px;
-                margin-bottom: 5px;
-                border-radius: 5px;
-                text-align: left;
-                color: white;
-            }
-
-        .modal-content input {
-            width: 100%;
-            padding: 8px;
-            margin-top: 10px;
-            border-radius: 5px;
-            border: 1px solid #555;
-            background: #111;
-            color: white;
-        }
-
-        .submit-btn {
-            background: #ff6600;
-            border: none;
-            padding: 10px;
-            width: 100%;
-            border-radius: 5px;
-            margin-top: 10px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-            .submit-btn:hover {
-                background: #cc5500;
-            }
-
+    }
 </style>

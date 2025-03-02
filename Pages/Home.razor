@@ -1,47 +1,77 @@
 ﻿@page "/"
 @layout MainLayout
 
-
 @inject HttpClient HttpClient
 
 <PageTitle>Home</PageTitle>
 
-@if (currentSlide != null)
+@if (slides.Any())
 {
-    <div class="Whole-home flex flex-column gap-5" id="Home">
-        <div class="slider" style="background-image: url('@currentSlide.ImageUrl');">
-            <div class="whole-content">
-                <div class="middle-content">
-                    <h2>@currentSlide.Title</h2>
-                </div>
-                <div class="third-content">
-                    <div class="date">
-                        <p>@currentSlide.Date</p>
+    <div class="whole-home" id="Home">
+        <div class="slider-container">
+            <div class="slider-content">
+                @foreach (var slide in slides)
+                {
+                    <div class="slide @(slide == currentSlide ? "active" : "")" style="background-image: url('@slide.ImageUrl');">
+                        <div class="slide-overlay"></div>
+                        <div class="slide-content">
+                            <div class="slide-category">
+                                <span>@slide.Category</span>
+                            </div>
+                            <div class="slide-title">
+                                <h2>@slide.Title</h2>
+                            </div>
+                            <div class="slide-details">
+                                <div class="slide-date">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>@slide.Date</span>
+                                </div>
+                                <div class="slide-description">
+                                    <p>@TruncateText(slide.Description, 25)</p>
+                                </div>
+                                <button class="read-more-btn" @onclick="() => ReadMoreClicked(slide)">Read More</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="subcontent">
-                        <p class="description">@TruncateText(currentSlide.Description, 100)</p>
-                    </div>
+                }
+            </div>
+            
+            <div class="slider-controls">
+                <button class="slider-arrow prev" @onclick="PreviousSlide">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="slider-indicators">
+                    @for (int i = 0; i < slides.Count; i++)
+                    {
+                        int index = i;
+                        <div class="indicator @(slideIndex == index ? "active" : "")" 
+                             @onclick="() => GoToSlide(index)">
+                        </div>
+                    }
                 </div>
+                <button class="slider-arrow next" @onclick="NextSlide">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
         </div>
 
-        <div id="popular"  class="Count d-flex justify-content-center w-[1440px] pt-5">
+        <div id="popular" class="popular-section">
             <ErrorBoundary>
-               <Popular/>
+                <Popular />
             </ErrorBoundary>
         </div>
 
         <div id="Footer">
             <Foot />
         </div>
-
-       
     </div>
-
 }
 else
 {
-    <p>No slides available.</p>
+    <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Loading slider content...</p>
+    </div>
 }
 
 @code {
@@ -49,11 +79,13 @@ else
     private Slide? currentSlide;
     private int slideIndex = 0;
     private System.Timers.Timer? timer;
+    private bool autoplayEnabled = true;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadSlides();
     }
+
     private string TruncateText(string text, int wordLimit)
     {
         if (string.IsNullOrWhiteSpace(text)) return string.Empty;
@@ -68,19 +100,23 @@ else
     {
         var allSlides = await FetchSlidesFromBackend();
 
-        // ✅ Only take the first three slides
+        // Only take the first three slides
         slides = allSlides.Take(3).ToList();
 
         if (slides.Count > 0)
         {
             currentSlide = slides[0];
-
-            // Start automatic slider (looping through only 3 slides)
-            timer = new System.Timers.Timer(5000);
-            timer.Elapsed += ChangeSlide;
-            timer.AutoReset = true;
-            timer.Start();
+            StartAutoSlide();
         }
+    }
+
+    private void StartAutoSlide()
+    {
+        // Start automatic slider
+        timer = new System.Timers.Timer(5000);
+        timer.Elapsed += ChangeSlide;
+        timer.AutoReset = true;
+        timer.Enabled = autoplayEnabled;
     }
 
     private async Task<List<Slide>> FetchSlidesFromBackend()
@@ -92,7 +128,34 @@ else
         catch (Exception ex)
         {
             Console.WriteLine($"Error fetching slides: {ex.Message}");
-            return new List<Slide>();
+            // Return dummy data for testing if API fails
+            return new List<Slide>
+            {
+                new Slide { 
+                    Id = "1", 
+                    ImageUrl = "/images/slide1.jpg", 
+                    Category = "Technology", 
+                    Title = "The Future of Web Development", 
+                    Date = "March 2, 2025", 
+                    Description = "Exploring the latest trends and technologies shaping the future of web development and how they impact developers around the world." 
+                },
+                new Slide { 
+                    Id = "2", 
+                    ImageUrl = "/images/slide2.jpg", 
+                    Category = "Programming", 
+                    Title = "Mastering Blazor for .NET Developers", 
+                    Date = "February 25, 2025", 
+                    Description = "A comprehensive guide to building modern web applications with Blazor, Microsoft's revolutionary web framework for .NET developers." 
+                },
+                new Slide { 
+                    Id = "3", 
+                    ImageUrl = "/images/slide3.jpg", 
+                    Category = "Design", 
+                    Title = "UI/UX Best Practices for 2025", 
+                    Date = "February 18, 2025", 
+                    Description = "Discover the essential design principles and practices that will help you create exceptional user experiences in 2025 and beyond." 
+                }
+            };
         }
     }
 
@@ -102,6 +165,58 @@ else
         slideIndex = (slideIndex + 1) % slides.Count;
         currentSlide = slides[slideIndex];
         StateHasChanged();
+    }
+
+    private void PreviousSlide()
+    {
+        PauseAutoplay();
+        if (slides.Count == 0) return;
+        slideIndex = (slideIndex - 1 + slides.Count) % slides.Count;
+        currentSlide = slides[slideIndex];
+        ResumeAutoplay();
+    }
+
+    private void NextSlide()
+    {
+        PauseAutoplay();
+        if (slides.Count == 0) return;
+        slideIndex = (slideIndex + 1) % slides.Count;
+        currentSlide = slides[slideIndex];
+        ResumeAutoplay();
+    }
+
+    private void GoToSlide(int index)
+    {
+        PauseAutoplay();
+        if (index >= 0 && index < slides.Count)
+        {
+            slideIndex = index;
+            currentSlide = slides[slideIndex];
+        }
+        ResumeAutoplay();
+    }
+
+    private void ReadMoreClicked(Slide slide)
+    {
+        // Implement navigation to blog post or modal with full content
+        Console.WriteLine($"Read more clicked for: {slide.Title}");
+        // You could navigate to a detail page using NavigationManager
+    }
+
+    private void PauseAutoplay()
+    {
+        if (timer != null)
+        {
+            timer.Enabled = false;
+        }
+    }
+
+    private void ResumeAutoplay()
+    {
+        if (timer != null)
+        {
+            timer.Enabled = autoplayEnabled;
+        }
     }
 
     public void Dispose()
@@ -120,70 +235,293 @@ else
     }
 }
 
-
 <style>
+   /* Base Styling */
+:root {
+    --primary-color: #3a86ff;
+    --secondary-color: #ff006e;
+    --text-light: #ffffff;
+    --text-dark: #333333;
+    --overlay-color: rgba(0, 0, 0, 0.5);
+    --transition-speed: 0.4s;
+}
 
+/* Make whole-home full width */
     .whole-home {
-        margin-top: 80px; /* Push content below the navbar */
-        
-    }
-    .high {
-        padding-left: 250px;
-        padding-top: 100px;
+        width: 100vw; /* Full screen width */
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
     }
 
-    .slider {
-        width: 1510px;
+/* Slider Container */
+    .slider-container {
+        position: relative;
+        width: 100vw; /* Full width */
         height: 600px;
-        background-color: black;
-        background-size: cover;
-        background-position: center;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
-    .slider {
-        position: relative;
-    }
+/* Loading State */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 600px;
+    background-color: #f8f9fa;
+    width: 100%;
+}
 
-    .middle-content {
-        color: #ffffff;
-        font-family: Lora;
-        font-size: 36px;
-        font-style: normal;
-        font-weight: 700;
-        line-height: normal;
-        width: 530px;
-    }
+/* Slides */
+.slider-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
 
-    .date {
-        color: #ffffff;
-        font-family: Lora;
-        font-size: 12px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: normal;
-    }
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity var(--transition-speed) ease;
+    z-index: 1;
+}
 
-    .subcontent {
-        color: #ffffff;
-        font-family: Lora;
-        font-size: 12px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 20px;
-        width: 420px;
-    }
+.slide.active {
+    opacity: 1;
+    z-index: 2;
+}
 
-    .third-content {
+.slide-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
+}
+
+/* Slide Content */
+.slide-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 50px;
+    color: var(--text-light);
+    transform: translateY(0);
+    transition: transform var(--transition-speed) ease;
+    z-index: 3;
+}
+
+.slide-category {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.5s ease 0.1s;
+}
+
+.slide-title {
+    margin-bottom: 20px;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.5s ease 0.2s;
+}
+
+.slide-title h2 {
+    font-family: 'Lora', serif;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+    max-width: 700px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.slide-details {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.5s ease 0.3s;
+    max-width: 600px;
+}
+
+.slide-date {
+    font-size: 14px;
+    font-family: 'Lora', serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.slide-description {
+    font-family: 'Lora', serif;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.read-more-btn {
+    display: inline-block;
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    padding: 10px 25px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: fit-content;
+}
+
+.read-more-btn:hover {
+    background-color: white;
+    color: var(--text-dark);
+    transform: translateY(-3px);
+}
+
+/* Animation for active slide content */
+.slide.active .slide-category,
+.slide.active .slide-title,
+.slide.active .slide-details {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Slider Controls */
+.slider-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 4;
+}
+
+.slider-indicators {
+    display: flex;
+    gap: 10px;
+}
+
+    #Footer {
+        width: 100vw;
+    }
+.indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.indicator.active {
+    background-color: white;
+    transform: scale(1.2);
+}
+
+.slider-arrow {
+    background-color: transparent;
+    color: white;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 10px;
+    margin: 0 15px;
+    transition: all 0.3s ease;
+}
+
+.slider-arrow:hover {
+    transform: scale(1.2);
+}
+
+/* Popular Section - Full Width */
+    .popular-section {
         display: flex;
-        gap: 20PX;
-        align-items:center;
+        justify-content: center;
+        width: 100vw; /* Full screen width */
+        padding-top: 50px;
     }
 
-    .whole-content {
-        display: flex;
-        position: relative;
-        top: 250px;
-        flex-direction: column;
-        padding-left: 100PX;
+/* Responsive Design */
+@@media (max-width: 1200px) {
+    .slider-container {
+        height: 500px;
     }
+}
+
+@@media (max-width: 992px) {
+    .slide-content {
+        padding: 30px;
+    }
+
+    .slide-title h2 {
+        font-size: 30px;
+    }
+}
+
+@@media (max-width: 768px) {
+    .slider-container {
+        height: 450px;
+    }
+
+    .slide-content {
+        padding: 20px;
+    }
+
+    .slide-title h2 {
+        font-size: 24px;
+        max-width: 100%;
+    }
+
+    .slide-description {
+        font-size: 14px;
+    }
+}
+
+@@media (max-width: 576px) {
+    .slider-container {
+        height: 400px;
+    }
+
+    .slide-category {
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+    .slide-title h2 {
+        font-size: 20px;
+    }
+
+    .slide-details {
+        gap: 10px;
+    }
+
+    .read-more-btn {
+        padding: 8px 15px;
+        font-size: 12px;
+    }
+
+    .slider-controls {
+        bottom: 10px;
+    }
+}
 </style>

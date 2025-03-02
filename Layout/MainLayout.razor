@@ -1,137 +1,467 @@
 ﻿@inherits LayoutComponentBase
 @inject IJSRuntime JS
 
-
 <div class="page">
     <main>
-       <div class="whole-nav">
-           <div class="left-side">
-               <h3>Sandy's Blog'</h3>
-           </div>
-           <div class="right-side">
-               <div class="data">
-                   <div class="item">
-                        <a href="javascript:void(0);" @onclick="ScrollToHome">Home</a>
-                   </div>
-                    <div class="item">
-                        <a href="javascript:void(0);" @onclick="ScrollToPopular">Blog</a>
-                    </div>
-
-                    <div class="item">
-                        <a href="javascript:void(0);" @onclick="ScrollToFooter">Contact Us</a>
-                    </div>
-
-               </div>
-               <div class="small-line"></div>
-                <div class="right-right">
-                    <a href="mailto:santhoshvenugopal2004@gmail.com" target="_blank">
-                        <div class="right-rights">
-                            <img src="./Email.svg" />
+        <nav class="navbar">
+            <div class="navbar-container">
+                <div class="navbar-logo">
+                    <h3>Sandy's Blog</h3>
+                </div>
+                <div class="navbar-menu">
+                    <div class="navbar-links">
+                        <div class="nav-item">
+                            <a href="javascript:void(0);" @onclick="ScrollToHome" class="nav-link">Home</a>
+                            <span class="nav-indicator"></span>
                         </div>
-                    </a>
-                    <div class="right-rights">
-                        <a href="https://www.linkedin.com/in/santhosh-v-p/" target="_blank">
-                            <img src="./LinkedIn.svg" />
+                        <div class="nav-item">
+                            <a href="javascript:void(0);" @onclick="ScrollToPopular" class="nav-link">Blog</a>
+                            <span class="nav-indicator"></span>
+                        </div>
+                        <div class="nav-item">
+                            <a href="javascript:void(0);" @onclick="ScrollToFooter" class="nav-link">Contact</a>
+                            <span class="nav-indicator"></span>
+                        </div>
+                    </div>
+                    <div class="navbar-divider"></div>
+                    <div class="navbar-socials">
+                        <a href="mailto:santhoshvenugopal2004@gmail.com" class="social-link" target="_blank" title="Email">
+                            <img src="./Email.svg" alt="Email" />
+                            <span class="social-tooltip">Email</span>
+                        </a>
+                        <a href="https://www.linkedin.com/in/santhosh-v-p/" class="social-link" target="_blank" title="LinkedIn">
+                            <img src="./LinkedIn.svg" alt="LinkedIn" />
+                            <span class="social-tooltip">LinkedIn</span>
+                        </a>
+                        <a href="https://wa.me/9715524124" class="social-link" target="_blank" title="WhatsApp">
+                            <img src="./WhatsApp.svg" alt="WhatsApp" />
+                            <span class="social-tooltip">WhatsApp</span>
+                        </a>
+                        <a href="https://github.com/Sandy-8-bit" class="social-link" target="_blank" title="GitHub">
+                            <img src="./GitHub.svg" alt="GitHub" />
+                            <span class="social-tooltip">GitHub</span>
                         </a>
                     </div>
-
-                    <div class="right-rights">
-                        <a href="https://wa.me/9715524124" target="_blank">
-                            <img src="./WhatsApp.svg" />
-                        </a>
-                      
-                    </div>
-                    <div class="right-rights">
-                        <a href="https://github.com/Sandy-8-bit" target="_blank">
-                            <img src="./GitHub.svg" />
-                        </a>
-                    </div>
-               </div>
-           </div>
-       </div>
-
-
-        <div>
-                @Body
+                    <button class="navbar-toggle" @onclick="ToggleMobileMenu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
             </div>
-        
-
+        </nav>
+        <div class="mobile-menu @(isMobileMenuOpen ? "open" : "")">
+            <div class="mobile-links">
+                <a href="javascript:void(0);" @onclick="ScrollToHomeAndClose">Home</a>
+                <a href="javascript:void(0);" @onclick="ScrollToPopularAndClose">Blog</a>
+                <a href="javascript:void(0);" @onclick="ScrollToFooterAndClose">Contact</a>
+            </div>
+            <div class="mobile-socials">
+                <a href="mailto:santhoshvenugopal2004@gmail.com" target="_blank">
+                    <img src="./Email.svg" alt="Email" />
+                </a>
+                <a href="https://www.linkedin.com/in/santhosh-v-p/" target="_blank">
+                    <img src="./LinkedIn.svg" alt="LinkedIn" />
+                </a>
+                <a href="https://wa.me/9715524124" target="_blank">
+                    <img src="./WhatsApp.svg" alt="WhatsApp" />
+                </a>
+                <a href="https://github.com/Sandy-8-bit" target="_blank">
+                    <img src="./GitHub.svg" alt="GitHub" />
+                </a>
+            </div>
+        </div>
+        <div class="content">
+            @Body
+        </div>
     </main>
 </div>
 
-
-
 @code {
+    private bool isMobileMenuOpen = false;
+
     private async Task ScrollToPopular()
     {
         await JS.InvokeVoidAsync("scrollToPopular");
     }
+
     private async Task ScrollToFooter()
     {
         await JS.InvokeVoidAsync("scrollToFooter");
     }
+
     private async Task ScrollToHome()
     {
         await JS.InvokeVoidAsync("scrollToHome");
     }
+
+    private void ToggleMobileMenu()
+    {
+        isMobileMenuOpen = !isMobileMenuOpen;
+    }
+
+    private async Task ScrollToHomeAndClose()
+    {
+        await ScrollToHome();
+        isMobileMenuOpen = false;
+    }
+
+    private async Task ScrollToPopularAndClose()
+    {
+        await ScrollToPopular();
+        isMobileMenuOpen = false;
+    }
+
+    private async Task ScrollToFooterAndClose()
+    {
+        await ScrollToFooter();
+        isMobileMenuOpen = false;
+    }
 }
 
 <style>
-    .right-rights{
-
+    /* Base Styles */
+    :root {
+        --primary-color: #3a86ff;
+        --text-color: #333;
+        --highlight-color: #ff006e;
+        --background-color: #ffffff;
+        --navbar-height: 70px;
+        --transition-speed: 0.3s;
     }
-    h3{
-        margin:0px;
+
+    /* General Styling */
+    body {
+        margin: 0;
+        font-family: 'Montserrat', sans-serif;
+        color: var(--text-color);
     }
 
-    .whole-nav {
+    .page {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        justify-content:space-between;
+    }
+
+    main {
+        flex: 1;
+        margin-top: var(--navbar-height);
+    }
+
+   
+    /* Navbar Styling */
+    .navbar {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        z-index: 1000; /* Ensures navbar is on top */
-       background-color:white;
-       display:flex;
-       justify-content:space-between;
-       padding:20px;
-    }
-
-    .data{
+        height: var(--navbar-height);
+        background-color: var(--background-color);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        transition: all var(--transition-speed) ease;
         display:flex;
-        gap:20px;
-        font-size:22px;
+        justify-content:space-between;
     }
 
-    .right-side{
-        display:flex;
-        gap:20px;
-    }
-    .right-right{
-        display:flex;
-        gap:15px;
-    }
-
-    .right-rights img  {
-       cursor:pointer;
-       width:48px;
-       height:35px;
+    .navbar-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      
+        width: 100%;
+        padding: 0 20px;
+        height: 100%;
     }
 
-    .item{
+    .navbar-logo h3 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 700;
+        background: linear-gradient(45deg, var(--primary-color), var(--highlight-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        transition: all var(--transition-speed) ease;
+    }
+
+    .navbar-logo h3:hover {
+        transform: scale(1.030);
+    }
+
+    .navbar-logo {
+        flex: 1; /* Pushes everything else to the right */
+        text-align: left;
+    }
+
+    .navbar-menu {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+    }
+    /* Navigation Links */
+    .navbar-links {
+        display: flex;
+        gap: 30px;
+    }
+
+    .nav-item {
+        position: relative;
+    }
+
+    .nav-link {
+        text-decoration: none;
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 18px;
+        transition: color var(--transition-speed) ease;
+        position: relative;
+        padding: 5px 0;
+    }
+
+    .nav-link:hover {
+        color: var(--primary-color);
+    }
+
+    .nav-indicator {
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: var(--primary-color);
+        transition: width var(--transition-speed) ease;
+    }
+
+    .nav-link:hover + .nav-indicator {
+        width: 100%;
+    }
+
+    .navbar-divider {
+        height: 30px;
+        width: 1px;
+        background-color: #ddd;
+    }
+
+    /* Social Icons */
+    .navbar-socials {
+        display: flex;
+        gap: 15px;
+        margin-left: auto; /* Pushes socials to the rightmost side */
+    }
+
+    .social-link {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        transition: all var(--transition-speed) ease;
+        background-color: #f5f5f5;
+    }
+
+    .social-link:hover {
+        transform: translateY(-3px);
+        background-color: #e6e6e6;
+    }
+
+    .social-link img {
+        width: 22px;
+        height: 22px;
+    }
+
+    .social-tooltip {
+        position: absolute;
+        top: 45px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #333;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        opacity: 0;
+        visibility: hidden;
+        transition: all var(--transition-speed) ease;
+        pointer-events: none;
+        white-space: nowrap;
+    }
+
+    .social-tooltip::before {
+        content: '';
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent transparent #333 transparent;
+    }
+
+    .social-link:hover .social-tooltip {
+        opacity: 1;
+        visibility: visible;
+        top: 50px;
+    }
+
+    /* Mobile Menu Toggle */
+    .navbar-toggle {
+        display: none;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 30px;
+        height: 22px;
+        background: transparent;
+        border: none;
         cursor: pointer;
-        font-weight:700;
-        font-family: 'Montserrat', sans-serif;
-        
-    }
-    .item a{
-            text-decoration: none;
-            color:black;
+        padding: 0;
     }
 
-    .small-line {
-        height:30px;
-        background-color:black;
-        width:2px;
+    .navbar-toggle span {
+        display: block;
+        width: 100%;
+        height: 2px;
+        background-color: var(--text-color);
+        transition: all var(--transition-speed) ease;
     }
 
+    /* Mobile Menu */
+    .mobile-menu {
+        position: fixed;
+        top: var(--navbar-height);
+        left: 0;
+        width: 100%;
+        background-color: var(--background-color);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        z-index: 999;
+        transform: translateY(-100%);
+        opacity: 0;
+        transition: all var(--transition-speed) ease;
+        padding: 20px;
+        display: none;
+    }
+
+    .mobile-menu.open {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .mobile-links {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .mobile-links a {
+        text-decoration: none;
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 18px;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        transition: color var(--transition-speed) ease;
+    }
+
+    .mobile-links a:hover {
+        color: var(--primary-color);
+    }
+
+    .mobile-socials {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .mobile-socials a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #f5f5f5;
+        transition: all var(--transition-speed) ease;
+    }
+
+    .mobile-socials a:hover {
+        transform: translateY(-3px);
+        background-color: #e6e6e6;
+    }
+
+    .mobile-socials img {
+        width: 22px;
+        height: 22px;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .navbar-links, .navbar-divider {
+            display: none;
+        }
+
+        .navbar-toggle {
+            display: flex;
+        }
+
+        .navbar-socials {
+            display: none;
+        }
+
+        .mobile-menu {
+            display: block;
+        }
+    }
+
+    /* Animation for navbar on scroll */
+    .navbar.scrolled {
+        height: 60px;
+        background-color: rgba(255, 255, 255, 0.95);
+    }
+
+    /* Add JS to handle this class */
+    /* 
+    window.onscroll = function() {
+        var navbar = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    };
+    */
 </style>
+
+<!-- Add this JavaScript to your _Host.cshtml or index.html file -->
+<script>
+    window.scrollToPopular = function() {
+        const popularSection = document.getElementById('blog-section');
+        if (popularSection) {
+            popularSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    window.scrollToFooter = function() {
+        const footer = document.getElementById('contact-section');
+        if (footer) {
+            footer.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    window.scrollToHome = function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // Add scroll event to handle navbar appearance
+    window.onscroll = function() {
+        var navbar = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    };
+</script>
