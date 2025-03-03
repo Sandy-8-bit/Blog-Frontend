@@ -29,7 +29,7 @@
         {
             @foreach (var slide in displayedSlides)
             {
-                <div class="card">
+                <div class="card animate-on-scroll">
                     <div class="card-image" @onclick="() => OpenModal(slide)">
                         <img src="@slide.ImageUrl" alt="@slide.Title">
                         <div class="category-badge">@slide.Category</div>
@@ -135,6 +135,15 @@
         await FetchSlidesByCategory(null);
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Initialize the scroll animation observer after the component is rendered
+            await JS.InvokeVoidAsync("initScrollAnimation");
+        }
+    }
+
     private async Task FetchSlidesByCategory(string? category)
     {
         try
@@ -148,6 +157,10 @@
             slides = await Http.GetFromJsonAsync<List<Slide>>(url) ?? new();
             displayedSlides = slides.Take(maxDisplayCount).ToList();
             StateHasChanged();
+
+            // Reinitialize the scroll animation after the slides have been loaded and rendered
+            await Task.Delay(100); // Small delay to ensure DOM is updated
+            await JS.InvokeVoidAsync("initScrollAnimation");
         }
         catch (Exception ex)
         {
@@ -226,8 +239,6 @@
         }
     }
 
-
-
     private async Task SubmitComment()
     {
         if (string.IsNullOrEmpty(username))
@@ -281,8 +292,6 @@
         isLoading = false;
         StateHasChanged();
     }
-
-
 
     private async Task<string?> PromptForUsername()
     {
@@ -471,6 +480,20 @@
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.05);
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    /* Animation classes for cards */
+    .card.animate-in {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .card.animate-out {
+        opacity: 0;
+        transform: translateY(-30px);
     }
 
     .card:hover {
@@ -892,3 +915,74 @@
         }
     }
 </style>
+
+<!-- JavaScript for Intersection Observer to handle scroll animations -->
+<script>
+   window.initScrollAnimation = function() {
+    // Check if IntersectionObserver is available
+    if ('IntersectionObserver' in window) {
+        const cards = document.querySelectorAll('.animate-on-scroll');
+        
+        // Configure the observer
+        const options = {
+            root: null, // Use viewport as the root
+            rootMargin: '0px', // No margin
+            threshold: 0.1 // Trigger when 10% of the element is visible
+        };
+        
+        // Create the observer
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                // If the card is in view
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in');
+                    entry.target.classList.remove('animate-out');
+                } else {
+                    // Only add animate-out if the card has already been animated in
+                    if (entry.target.classList.contains('animate-in')) {
+                        entry.target.classList.remove('animate-in');
+                        entry.target.classList.add('animate-out');
+                    }
+                }
+            });
+        }, options);
+        
+        // Observe each card
+        cards.forEach(card => {
+            observer.observe(card);
+        });
+    } else {
+        // Fallback for browsers that don't support IntersectionObserver
+        const cards = document.querySelectorAll('.animate-on-scroll');
+        cards.forEach(card => {
+            // Add animate-in class by default
+            card.classList.add('animate-in');
+        });
+        
+        // Handle animation on scroll with scroll event
+        window.addEventListener('scroll', function() {
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+                
+                // Check if card is in viewport
+                if (rect.top <= windowHeight * 0.9 && rect.bottom >= windowHeight * 0.1) {
+                    card.classList.add('animate-in');
+                    card.classList.remove('animate-out');
+                } else {
+                    if (card.classList.contains('animate-in')) {
+                        card.classList.remove('animate-in');
+                        card.classList.add('animate-out');
+                    }
+                }
+            });
+        });
+        
+        // Trigger initial check
+        window.dispatchEvent(new Event('scroll'));
+    }
+};
+
+// Auto-initialize when the DOM is ready
+document.addEventListener('DOMContentLoaded', window.initScrollAnimation);
+</script>

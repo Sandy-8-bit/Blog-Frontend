@@ -73,6 +73,10 @@
       "PackagePath": "staticwebassets\\index.html"
     },
     {
+      "Id": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\js\\scrollAnimation.js",
+      "PackagePath": "staticwebassets\\js\\scrollAnimation.js"
+    },
+    {
       "Id": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\js\\weather.json",
       "PackagePath": "staticwebassets\\js\\weather.json"
     },

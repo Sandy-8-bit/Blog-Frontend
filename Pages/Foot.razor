@@ -1,82 +1,520 @@
-
 <footer class="footer">
     <div class="footer-container">
-        <div class="footer-section">
-            <h3>Contact the Publisher</h3>
-            <p>Santhoshvenugopal2004@gmail.com</p>
-            <p>+91 9715524124</p>
-        </div>
-        <div class="footer-section">
-            <h3>Address</h3>
-            <p>26/4d Murugan layout</p>
-            <p>Karpura nagar</p>
-            <p>Jothipuram (po)</p>
-            <p>Coimbatore - 641047</p>
-        </div>
-        <div class="footer-section">
-            <h3>Connections</h3>
-            <div class="social-icons">
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-youtube"></i></a>
-                <a href="#"><i class="fab fa-pinterest"></i></a>
+        <div class="footer-section contact-section">
+            <h3 class="footer-heading">Contact Us</h3>
+            <div class="contact-item">
+                <i class="fas fa-envelope"></i>
+                <a href="mailto:Santhoshvenugopal2004@gmail.com" class="footer-link">Santhoshvenugopal2004@gmail.com</a>
             </div>
-            <a href="/login" class="admin-link">Admin</a>
+            <div class="contact-item">
+                <i class="fas fa-phone-alt"></i>
+                <a href="tel:+919715524124" class="footer-link">+91 9715524124</a>
+            </div>
+            <div class="newsletter">
+                <h4>Subscribe to our newsletter</h4>
+                <div class="newsletter-form">
+                    <input type="email" placeholder="Your email" class="newsletter-input">
+                    <button class="newsletter-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-section location-section">
+            <h3 class="footer-heading">Our Location</h3>
+            <address class="address">
+                <div class="address-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                        <p>26/4d Murugan layout</p>
+                        <p>Karpura nagar, Jothipuram (po)</p>
+                        <p>Coimbatore - 641047</p>
+                    </div>
+                </div>
+            </address>
+            <div class="map-container">
+                <div class="map-placeholder">
+                    <i class="fas fa-map"></i>
+                    <span>View on Map</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-section connect-section">
+            <h3 class="footer-heading">Stay Connected</h3>
+            <div class="social-icons">
+                <a href="#" class="social-icon facebook" aria-label="Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="social-icon twitter" aria-label="Twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="social-icon instagram" aria-label="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" class="social-icon youtube" aria-label="YouTube">
+                    <i class="fab fa-youtube"></i>
+                </a>
+            </div>
+            <div class="quick-links">
+                <h4>Quick Links</h4>
+                <ul class="links-list">
+                    <li><a href="#" class="footer-link">About Us</a></li>
+                    <li><a href="#" class="footer-link">Privacy Policy</a></li>
+                    <li><a href="#" class="footer-link">Terms & Conditions</a></li>
+                    <li><a href="/login" class="admin-link">Admin Portal</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <div class="copyright">
+            <p>&copy; 2025 All Rights Reserved</p>
+        </div>
+        <div class="back-to-top">
+            <button id="scrollToTop" aria-label="Scroll to top">
+                <i class="fas fa-chevron-up"></i>
+            </button>
         </div>
     </div>
 </footer>
 
 <style>
+    /* Footer Styles */
     .footer {
-        background-color: #232323;
-        color: #fff;
-        padding: 20px 0;
-        text-align: center;
+        background: linear-gradient(135deg, #1a1a25 0%, #0f0f13 100%);
+        color: #e0e0e0;
+        padding: 50px 0 20px;
+        position: relative;
+        box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.1);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .footer::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #3a7bd5, #00d2ff);
     }
 
     .footer-container {
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         flex-wrap: wrap;
         max-width: 1200px;
-        margin: auto;
+        margin: 0 auto;
+        padding: 0 20px;
     }
 
     .footer-section {
         flex: 1;
-        margin: 10px;
-        min-width: 250px;
+        min-width: 300px;
+        margin: 0 15px 30px;
+        transition: transform 0.3s ease;
     }
 
-    .footer-section h3 {
-        font-size: 1.2rem;
+    .footer-section:hover {
+        transform: translateY(-5px);
+    }
+
+    .footer-heading {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        position: relative;
+        color: #fff;
+    }
+
+    .footer-heading::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 50px;
+        height: 2px;
+        background: linear-gradient(90deg, #3a7bd5, #00d2ff);
+        transition: width 0.3s ease;
+    }
+
+    .footer-section:hover .footer-heading::after {
+        width: 80px;
+    }
+
+    /* Contact Section */
+    .contact-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .contact-item:hover {
+        color: #00d2ff;
+    }
+
+    .contact-item i {
+        font-size: 18px;
+        width: 30px;
+        margin-right: 10px;
+        color: #3a7bd5;
+    }
+
+    .footer-link {
+        color: #e0e0e0;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .footer-link:hover {
+        color: #00d2ff;
+        text-decoration: underline;
+    }
+
+    .newsletter {
+        margin-top: 25px;
+    }
+
+    .newsletter h4 {
+        font-size: 1rem;
+        margin-bottom: 15px;
+        color: #ccc;
+    }
+
+    .newsletter-form {
+        display: flex;
+        overflow: hidden;
+        border-radius: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .newsletter-form:focus-within {
+        box-shadow: 0 5px 20px rgba(58, 123, 213, 0.3);
+        border-color: rgba(58, 123, 213, 0.5);
+    }
+
+    .newsletter-input {
+        flex: 1;
+        padding: 12px 18px;
+        border: none;
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        font-size: 14px;
+    }
+
+    .newsletter-input:focus {
+        outline: none;
+    }
+
+    .newsletter-input::placeholder {
+        color: #888;
+    }
+
+    .newsletter-btn {
+        background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+        border: none;
+        color: white;
+        padding: 0 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .newsletter-btn:hover {
+        background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+    }
+
+    /* Location Section */
+    .address {
+        font-style: normal;
+        line-height: 1.6;
+    }
+
+    .address-item {
+        display: flex;
+        margin-bottom: 15px;
+    }
+
+    .address-item i {
+        font-size: 18px;
+        margin-right: 15px;
+        margin-top: 5px;
+        color: #3a7bd5;
+    }
+
+    .address-item p {
+        margin: 0;
+        color: #ccc;
+    }
+
+    .map-container {
+        margin-top: 20px;
+        border-radius: 10px;
+        overflow: hidden;
+        height: 120px;
+        background: rgba(255, 255, 255, 0.05);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .map-container:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .map-placeholder {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #aaa;
+    }
+
+    .map-placeholder i {
+        font-size: 30px;
         margin-bottom: 10px;
+        color: #3a7bd5;
     }
 
-    .footer-section p {
-        margin: 5px 0;
-    }
-
+    /* Connect Section */
     .social-icons {
         display: flex;
-        justify-content: center;
-        gap: 15px;
+        gap: 12px;
+        margin-bottom: 25px;
     }
 
-    .social-icons a {
-        color: white;
-        font-size: 1.5rem;
+    .social-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        font-size: 18px;
+        transition: all 0.3s ease;
         text-decoration: none;
+    }
+
+    .social-icon:hover {
+        transform: translateY(-3px);
+    }
+
+    .facebook:hover {
+        background: #3b5998;
+        box-shadow: 0 5px 15px rgba(59, 89, 152, 0.4);
+    }
+
+    .twitter:hover {
+        background: #1da1f2;
+        box-shadow: 0 5px 15px rgba(29, 161, 242, 0.4);
+    }
+
+    .instagram:hover {
+        background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+        box-shadow: 0 5px 15px rgba(225, 48, 108, 0.4);
+    }
+
+    .youtube:hover {
+        background: #ff0000;
+        box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+    }
+
+    .quick-links h4 {
+        font-size: 1rem;
+        margin-bottom: 15px;
+        color: #ccc;
+    }
+
+    .links-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .links-list li {
+        margin-bottom: 10px;
+        transition: transform 0.3s ease;
+    }
+
+    .links-list li:hover {
+        transform: translateX(5px);
+    }
+
+    .links-list li a {
+        display: inline-block;
+        color: #e0e0e0;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .links-list li a:hover {
+        color: #00d2ff;
     }
 
     .admin-link {
-        display: block;
-        margin-top: 10px;
-        color: #ddd;
+        display: inline-block;
+        color: #888;
         text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
     }
 
     .admin-link:hover {
+        color: #00d2ff;
+    }
+
+    .admin-link::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: #00d2ff;
+        transition: width 0.3s ease;
+    }
+
+    .admin-link:hover::after {
+        width: 100%;
+    }
+
+    /* Footer Bottom */
+    .footer-bottom {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .copyright {
+        color: #888;
+        font-size: 14px;
+    }
+
+    .back-to-top {
+        position: relative;
+    }
+
+    #scrollToTop {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        border: none;
         color: #fff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #scrollToTop:hover {
+        background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(58, 123, 213, 0.4);
+    }
+
+    /* Responsive Adjustments */
+    @@media (max-width: 992px) {
+        .footer-container {
+            justify-content: flex-start;
+        }
+        
+        .footer-section {
+            min-width: 250px;
+            flex-basis: calc(50% - 30px);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .footer-section {
+            flex-basis: 100%;
+        }
+        
+        .footer-bottom {
+            flex-direction: column;
+            gap: 15px;
+        }
     }
 </style>
+
+<script>
+    // Add FontAwesome if not already included in your project
+    if (!document.querySelector('link[href*="font-awesome"]')) {
+        const fontAwesome = document.createElement('link');
+        fontAwesome.rel = 'stylesheet';
+        fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+        document.head.appendChild(fontAwesome);
+    }
+    
+    // Scroll to top functionality
+    document.getElementById('scrollToTop').addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+    
+    // Newsletter form submission
+    const newsletterForm = document.querySelector('.newsletter-form');
+    const newsletterInput = document.querySelector('.newsletter-input');
+    const newsletterBtn = document.querySelector('.newsletter-btn');
+    
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (newsletterInput.value.trim() !== '') {
+                // Add a success animation
+                newsletterBtn.innerHTML = '<i class="fas fa-check"></i>';
+                newsletterBtn.style.background = '#28a745';
+                
+                // You would typically send this to your backend here
+                console.log('Newsletter subscription for:', newsletterInput.value);
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    newsletterInput.value = '';
+                    newsletterBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+                    newsletterBtn.style.background = '';
+                }, 2000);
+            }
+        });
+    }
+    
+    // Map placeholder click handler
+    const mapPlaceholder = document.querySelector('.map-placeholder');
+    if (mapPlaceholder) {
+        mapPlaceholder.addEventListener('click', function() {
+            // Open Google Maps or your preferred map service
+            window.open('https://maps.google.com/?q=26/4d+Murugan+layout+Karpura+nagar+Jothipuram+Coimbatore+641047', '_blank');
+        });
+    }
+    
+    // Add hover effects to contact items
+    const contactItems = document.querySelectorAll('.contact-item');
+    contactItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            const icon = this.querySelector('i');
+            icon.style.transform = 'scale(1.2)';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            const icon = this.querySelector('i');
+            icon.style.transform = 'scale(1)';
+        });
+    });
+</script>

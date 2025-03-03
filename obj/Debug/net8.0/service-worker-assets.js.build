@@ -37,12 +37,16 @@
       "url": "icon-512.png"
     },
     {
-      "hash": "sha256-qePInCHQZTCMma5J9qUx1ACfyFtaWDqWhCLIZmtKyQA=",
+      "hash": "sha256-F59q3H93uUDzu\/TdjiVF1VWnjaI6ZsPUSlfTEUEJJtI=",
       "url": "index.html"
     },
     {
       "hash": "sha256-EA10Ue5380MPoyM3+I2Wqzpo57OmRyntmfjJsRRY5LU=",
       "url": "Instagram.svg"
+    },
+    {
+      "hash": "sha256-o8ZrOy3mHb9M5gUZOPQ5BqTEWjS9+PrsDn19NNhkUKo=",
+      "url": "js\/scrollAnimation.js"
     },
     {
       "hash": "sha256-enKgCMkYmCpfEcmg6Annbmc40VZ\/A6aYYSQjZfVn2cU=",
@@ -901,17 +905,17 @@
       "url": "_framework\/icudt_no_CJK.dat"
     },
     {
-      "hash": "sha256-Y4ZopQLVziD1yiMbJswsTWG47qVfPZFOEgWVArETBK0=",
+      "hash": "sha256-Tu70h3HlNHbz5pFWU5zqsciobxv4kTIM++ic2xu4uMQ=",
       "url": "_framework\/Blog frontend.wasm"
     },
     {
-      "hash": "sha256-hRJSKlu+zb5Z3U4pd6r8+XSxiugkVMWGccHH6rnZdmI=",
+      "hash": "sha256-jVY+Fdn6Dhvg7+bYTPcBm7nEaKwwooFfJEsFgypfx9Q=",
       "url": "_framework\/Blog frontend.pdb"
     },
     {
-      "hash": "sha256-+AumAHjEozm9P0EzJ37WwM0qTZd+5u7tTP7BPLMGjsA=",
+      "hash": "sha256-ss9lKp3Be7wv4iiReqIXwe5rlLFixsjPmxtQWYmvwKM=",
       "url": "_framework\/blazor.boot.json"
     }
   ],
-  "version": "6FvtrYl8"
+  "version": "\/n5P7HjH"
 };

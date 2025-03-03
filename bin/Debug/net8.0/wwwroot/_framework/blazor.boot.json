@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "Blog frontend",
   "resources": {
-    "hash": "sha256-ekTPQqUjjF/rCVLPvnEwDTnFMwthQT0JlRz/aYxGq5o=",
+    "hash": "sha256-F9OEwLX45yS+67Gl0zV7rULgupN2uHdOUi688j9zv/Y=",
     "jsModuleNative": {
       "dotnet.native.8.0.8.93i67mqfmb.js": "sha256-juC5sA7gHTLXFEhAKgdM2/RavswpwCtDfjYGsAz2FXg="
     },
@@ -214,10 +214,10 @@
       "mscorlib.wasm": "sha256-Gz8PyW2/fwihe5ul81OwmRUrU71r+KtbyRw6xlOGD+Q=",
       "netstandard.wasm": "sha256-jMTqIQzoDS810lyhZpMO5eEC36EzntXqSVn+2qwkOMQ=",
       "System.Private.CoreLib.wasm": "sha256-NFj5WE5VLP2LptZIRJCUIc1AMk06FmxpsSILfPISwAw=",
-      "Blog frontend.wasm": "sha256-TANQ4BXfXtxZNzv2s0FxRrdEVRxSTj/QynNPG3rvdq8="
+      "Blog frontend.wasm": "sha256-9W+90p6Re7IJ3vMsjEPmlReQ9aLVVmaNiDZ0YM+xxdc="
     },
     "pdb": {
-      "Blog frontend.pdb": "sha256-e/by1uNEJisP+tcjPHauTqyotqVBr6SnAFNuogwRyIU="
+      "Blog frontend.pdb": "sha256-4FfjlB2RRMKO65CP2B7/W5EB3gpqe1BF/d7wG5Fcrwc="
     }
   },
   "cacheBootResources": true,

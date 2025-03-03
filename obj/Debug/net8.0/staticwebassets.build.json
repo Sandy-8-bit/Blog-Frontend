@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "KtLuhgyyWbj+JAG8CcT7obb4A9OhGsV85S8LSZ2rB5Q=",
+  "Hash": "6O3pEjfzgVLD7390jvtZOUmGavcaDLXsf6vyUj6X5Cw=",
   "Source": "Blog frontend",
   "BasePath": "/",
   "Mode": "Root",
@@ -8318,6 +8318,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\Instagram.svg"
+    },
+    {
+      "Identity": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\js\\scrollAnimation.js",
+      "SourceId": "Blog frontend",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "js/scrollAnimation.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\scrollAnimation.js"
     },
     {
       "Identity": "C:\\Users\\santh\\source\\repos\\Blog frontend\\wwwroot\\js\\weather.json",
